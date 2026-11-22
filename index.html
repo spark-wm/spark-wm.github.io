@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SparkWM</title>
+    <meta name="description" content="SparkWM is an audio-video world model post-trained from MiniMax H3 33B. It generates video and sound chunk by chunk; each chunk covers about 0.7 s of video and takes 4 denoising steps, and from chunk 3 on sparse attention reduces the attention computation." />
+    <meta name="theme-color" content="#F3F0EA" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0D0C0A" media="(prefers-color-scheme: dark)" />
+    <!-- Link previews need absolute URLs: change both when the page moves to its release address. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://spark-wm.github.io/" />
+    <meta property="og:title" content="SparkWM" />
+    <meta property="og:description" content="An audio-video world model post-trained from MiniMax H3 33B that generates video and sound chunk by chunk, in 4 denoising steps per chunk." />
+    <meta property="og:image" content="https://spark-wm.github.io/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="sparkwm-icon.svg" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <script>
+      try {
+        var s = localStorage.getItem('sparkwm-theme');
+        if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s;
+        var l = localStorage.getItem('sparkwm-lang') || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
+        document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

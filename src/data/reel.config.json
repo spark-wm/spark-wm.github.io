@@ -1,0 +1,7 @@
+{
+  "crossfade": 0.5,
+  "segments": [
+    { "id": "demo1", "from": 2, "to": 9 },
+    { "id": "demo2", "from": 0, "to": 6 }
+  ]
+}

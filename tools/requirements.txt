@@ -1,0 +1,4 @@
+fonttools[woff]==4.55.3
+numpy
+opencv-python-headless
+pillow

@@ -1,0 +1,18 @@
+{
+  "duration": 12.0,
+  "crossfade": 0.5,
+  "segments": [
+    {
+      "id": "demo1",
+      "start": -0.25,
+      "end": 6.25,
+      "jump": 0.0
+    },
+    {
+      "id": "demo2",
+      "start": 6.25,
+      "end": 11.75,
+      "jump": 6.5
+    }
+  ]
+}
