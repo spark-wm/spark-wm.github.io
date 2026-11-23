@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// Speed-up: headline factor, per-chunk time on one and four RTX 5090s, and an end-to-end latency chart
-// (log scale). Every number comes from content.ts (efficiency.latency, efficiency.speed). Until they are
-// measured, a DRAFT build shows one pending marker and equal-width placeholder bars (so no speed-up is
-// implied); a release build hides the whole section.
+// Speed-up. The claim (group, 11-23): SparkWM runs on a single RTX 5090, plus the end-to-end speed-up of
+// distributed inference on RTX 5090s. Headline factor, single-card clip length, and an end-to-end latency
+// chart (log scale). Numbers come from content.ts (efficiency). Until the speed-up is measured, a DRAFT
+// build shows one pending marker and equal-width placeholder bars (so no ratio is implied).
 import { computed, ref } from 'vue'
 import { DRAFT, efficiency, t } from '../content'
 import { tr, ui } from '../state'
@@ -17,10 +17,13 @@ const rows = efficiency.latency.rows
 const base = rows[0]
 const ours = rows.find((r) => r.ours) ?? rows[rows.length - 1]
 const known = rows.every((r) => r.seconds !== null)
-const speedup = known && base.seconds && ours.seconds ? base.seconds / ours.seconds : null
-const sp = efficiency.speed
-const anyData = known || sp.oneGpu !== null || sp.fourGpu !== null
-const show = anyData || DRAFT
+const multi = efficiency.multi
+// the stated factor wins; otherwise it follows from the latency rows
+const speedup = multi.speedup ?? (known && base.seconds && ours.seconds ? base.seconds / ours.seconds : null)
+const single = efficiency.singleGpuSeconds
+const headLabel = computed(() => (multi.gpus ? tr(R.headlineN).replace('{n}', String(multi.gpus)) : tr(R.headline)))
+const anyData = speedup !== null || known
+const show = true
 
 // log axis from the decade below the fastest to the decade above the slowest
 const lo = known ? Math.pow(10, Math.floor(Math.log10(Math.min(...rows.map((r) => r.seconds as number))))) : 1
@@ -48,30 +51,20 @@ const markerText = computed(() => (speedup === null ? '' : ui.lang === 'zh' ? `$
       </div>
 
       <div class="stats">
-        <div class="stat headline">
+        <div v-if="speedup !== null || DRAFT" class="stat headline">
           <p class="stat-value num">
-            <template v-if="speedup !== null">{{ Math.round(speedup) }}<span class="x">×</span></template>
+            <template v-if="speedup !== null">{{ speedup >= 10 ? Math.round(speedup) : speedup.toFixed(1) }}<span class="x">×</span></template>
             <span v-else class="dash" role="img" :aria-label="tr(t.pending)" />
           </p>
-          <p class="stat-label">{{ tr(R.headline) }}</p>
+          <p class="stat-label">{{ headLabel }}</p>
         </div>
         <div class="stat">
-          <p class="stat-value num">
-            <template v-if="sp.oneGpu !== null">{{ sp.oneGpu.toFixed(2) }}<span class="u">s</span></template>
-            <span v-else class="dash" role="img" :aria-label="tr(t.pending)" />
-          </p>
-          <p class="stat-label">{{ tr(R.perChunkOne) }}</p>
-        </div>
-        <div class="stat">
-          <p class="stat-value num">
-            <template v-if="sp.fourGpu !== null">{{ sp.fourGpu.toFixed(2) }}<span class="u">s</span></template>
-            <span v-else class="dash" role="img" :aria-label="tr(t.pending)" />
-          </p>
-          <p class="stat-label">{{ tr(R.perChunkFour) }}</p>
+          <p class="stat-value num">{{ single }}<span class="u">s</span></p>
+          <p class="stat-label">{{ tr(R.single) }}</p>
         </div>
       </div>
 
-      <figure class="chart" :class="{ skeleton: !known, grow }">
+      <figure v-if="known || DRAFT" class="chart" :class="{ skeleton: !known, grow }">
         <figcaption class="chart-head">
           <span class="chart-title">{{ tr(R.latencyTitle) }}</span>
           <span v-if="efficiency.latency.setup" class="chart-setup">{{ tr(efficiency.latency.setup) }}</span>
@@ -113,7 +106,7 @@ const markerText = computed(() => (speedup === null ? '' : ui.lang === 'zh' ? `$
 }
 .stats {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr;
+  grid-template-columns: 1.6fr 1fr;
   gap: 16px;
   margin-bottom: 16px;
 }
@@ -288,10 +281,7 @@ const markerText = computed(() => (speedup === null ? '' : ui.lang === 'zh' ? `$
 }
 @media (max-width: 860px) {
   .stats {
-    grid-template-columns: 1fr 1fr;
-  }
-  .stat.headline {
-    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
   }
   .chart {
     --who: 0px;

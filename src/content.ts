@@ -18,12 +18,33 @@ export const links = {
   weights: '', // Hugging Face URL
 }
 
-export interface Author { name: string; aff: number[]; equal?: boolean; lead?: boolean; url?: string }
-/** Fill in final order. aff indexes into `affiliations` (1-based). */
-export const authors: Author[] = []
+export interface Author { name: string; aff: number[]; equal?: boolean; corr?: boolean; lead?: boolean; url?: string }
+/** Order and marks follow the technical report (Overleaf main.tex, 11-23). aff indexes into `affiliations` (1-based). */
+export const authors: Author[] = [
+  { name: 'Yuxi Liu', aff: [1, 2], equal: true, lead: true },
+  { name: 'Zhengyang Huang', aff: [1], equal: true },
+  { name: 'Haiming Sun', aff: [1], equal: true },
+  { name: 'Shikun Ruan', aff: [1], equal: true },
+  { name: 'Tianle Liu', aff: [1] },
+  { name: 'Yixiang Cai', aff: [1] },
+  { name: 'Zekun Zhang', aff: [1], corr: true },
+  { name: 'Tengxu Sun', aff: [2], corr: true },
+  { name: 'Baole Ai', aff: [2] },
+  { name: 'Ang Wang', aff: [2] },
+  { name: 'Jiamang Wang', aff: [2] },
+  { name: 'Lin Qu', aff: [2] },
+  { name: 'Kun Yuan', aff: [1], corr: true },
+]
+/** Superscript after a name: affiliations, then * equal contribution, † corresponding, ‡ project leader. */
+export const authorMarks = (a: Author) => a.aff.join(',') + (a.equal ? '*' : '') + (a.corr ? '†' : '') + (a.lead ? '‡' : '')
+export const authorNotes: L[] = [
+  { en: '* Equal contribution', zh: '* 共同第一作者' },
+  { en: '† Corresponding authors', zh: '† 通讯作者' },
+  { en: '‡ Project leader', zh: '‡ 项目负责人' },
+]
 
 export const affiliations = [
-  { id: 1, name: { en: 'Peking University', zh: '北京大学' }, logo: 'logos/pku.svg' },
+  { id: 1, name: { en: 'Peking University, Melon Group', zh: '北京大学 Melon Group' }, logo: 'logos/pku.svg' },
   { id: 2, name: { en: 'Alibaba Group', zh: '阿里巴巴集团' }, logo: 'logos/alibaba.svg' },
 ]
 
@@ -57,21 +78,19 @@ export const wallSlots = 9
 
 /** Shown in the facts row. value null = pending. */
 export const facts: { value: string | null; unit?: string; label: L; countTo?: number }[] = [
-  { value: null, label: { en: 'per chunk on one RTX 5090', zh: '每块耗时（一张 RTX 5090）' } },
+  { value: '10', unit: 's', countTo: 10, label: { en: 'of audio-video generated on a single RTX 5090', zh: '单张 RTX 5090 上能生成的音视频长度' } },
   { value: '4', countTo: 4, label: { en: 'denoising steps per chunk', zh: '每块的去噪步数' } },
   { value: '≈10', unit: '%', label: { en: 'of video token groups each query group attends to exactly, from chunk 3 on', zh: '每个查询组精确计算的视频 token 组占比（第 3 块起）' } },
   { value: '≈0.7', unit: 's', label: { en: 'of video per chunk', zh: '每块的视频长度' } },
   { value: '33', unit: 'B', countTo: 33, label: { en: 'H3 parameters, frozen during training', zh: 'H3 参数，训练时冻结' } },
 ]
 
-/** Efficiency comparison bars. */
+/** Speed figures. The claim is: SparkWM runs on a single RTX 5090, plus the end-to-end speed-up of distributed inference on RTX 5090s. */
 export const efficiency = {
-  rows: [
-    { label: { en: 'Denoising steps', zh: '去噪步数' }, before: 30, after: 4, beforeText: { en: 'about 30, whole clip', zh: '约 30，整段一起' }, afterText: { en: '4 per chunk', zh: '每块 4 步' }, unit: '' },
-    { label: { en: 'Video tiles with exact attention', zh: '精确计算的视频 token 组' }, before: 100, after: 10, beforeText: { en: '100%', zh: '100%' }, afterText: { en: 'about 10% (from chunk 3)', zh: '约 10%（第 3 块起）' }, unit: '' },
-  ],
-  /** Seconds per chunk on one / four RTX 5090. null = pending. */
-  speed: { oneGpu: null as number | null, fourGpu: null as number | null },
+  /** Longest clip one RTX 5090 (32 GB) generates, in seconds (Shikun, group chat 11-23 20:32). */
+  singleGpuSeconds: 10,
+  /** End-to-end speed-up of distributed inference on `gpus` RTX 5090s. null = pending. */
+  multi: { speedup: null as number | null, gpus: null as number | null },
   /**
    * End-to-end time to generate the same clip, H3 vs SparkWM. seconds null = pending; the speed-up is
    * computed from the first and the `ours` row once both are filled. `setup` is the measurement condition.
@@ -87,7 +106,7 @@ export const efficiency = {
 
 export const bibtex = `@article{sparkwm2026,
   title = {SparkWM},
-  author = {},
+  author = {Liu, Yuxi and Huang, Zhengyang and Sun, Haiming and Ruan, Shikun and Liu, Tianle and Cai, Yixiang and Zhang, Zekun and Sun, Tengxu and Ai, Baole and Wang, Ang and Wang, Jiamang and Qu, Lin and Yuan, Kun},
   journal = {arXiv preprint},
   year = {2026}
 }`
@@ -121,8 +140,8 @@ export const t = {
       zh: 'SparkWM 是由 MiniMax H3 33B（330 亿参数）后训练而成的音视频世界模型。H3 一次生成整段约 6.6 秒的音视频，要去噪约 30 步；SparkWM 改为逐块生成，每块只去噪 4 步。',
     },
     base: {
-      en: 'Each chunk covers about 0.7 s of video and is conditioned on a text prompt, the first frame and a camera trajectory. From its KV cache, a chunk reads only the prompt, the first frame and up to 5 preceding chunks, so the cost per chunk does not grow with video length. From chunk 3 on, sparse attention cuts compute further, and the model is trained with 8-bit (MXFP8) fake quantization, with deployment planned on the RTX 5090.',
-      zh: '每块是约 0.7 秒的视频，根据提示词、第一帧和相机轨迹生成。生成每一块时，从缓存只读取提示词、第一帧和前面最多 5 块，因此每块的计算量不随视频变长而增加。从第 3 块起改用稀疏注意力，进一步减少计算量；训练时还对模型做了 8 位精度（MXFP8）的伪量化，计划部署在 RTX 5090 上。',
+      en: 'Each chunk covers about 0.7 s of video and is conditioned on a text prompt, the first frame and a camera trajectory. From its KV cache, a chunk reads only the prompt, the first frame and up to 5 preceding chunks, so the cost per chunk does not grow with video length. From chunk 3 on, sparse attention cuts compute further, and the model is trained with 8-bit (MXFP8) fake quantization; a single RTX 5090 generates 10 s of audio and video.',
+      zh: '每块是约 0.7 秒的视频，根据提示词、第一帧和相机轨迹生成。生成每一块时，从缓存只读取提示词、第一帧和前面最多 5 块，因此每块的计算量不随视频变长而增加。从第 3 块起改用稀疏注意力，进一步减少计算量；训练时还对模型做了 8 位精度（MXFP8）的伪量化，单张 RTX 5090 上就能生成 10 秒的音视频。',
     },
     paper: { en: 'Paper', zh: '论文' },
     code: { en: 'Code', zh: '代码' },
@@ -197,8 +216,8 @@ export const t = {
     keys: { en: 'Key groups', zh: '键 token 组' },
     quantTitle: { en: 'Quantization-aware training (QAT)', zh: '量化感知训练' },
     quantBody: {
-      en: 'SparkWM is planned for deployment on the RTX 5090 (32 GB). From training stage 5 on, the weights and activations of the backbone\u2019s attention and feed-forward layers are fake-quantized to MXFP8 in the forward pass, so the model adapts to 8-bit precision during training. Our inference code reuses the quantization settings recorded in training and needs no separate post-training quantization.',
-      zh: 'SparkWM 计划部署在 RTX 5090（32 GB 显存）上。为此，从训练阶段 5 起，前向计算就对主干网络注意力层和前馈层的权重和激活做 MXFP8 伪量化，让模型在训练中适应 8 位精度；我们的推理代码直接沿用训练时记录的量化设置，不需要再做训练后量化。',
+      en: 'SparkWM is built to run on a single RTX 5090 (32 GB). To this end, from training stage 5 on, the weights and activations of the backbone\u2019s attention and feed-forward layers are fake-quantized to MXFP8 in the forward pass, so the model adapts to 8-bit precision during training. Our inference code reuses the quantization settings recorded in training and needs no separate post-training quantization.',
+      zh: 'SparkWM 要在单张 RTX 5090（32 GB 显存）上运行。为此，从训练阶段 5 起，前向计算就对主干网络注意力层和前馈层的权重和激活做 MXFP8 伪量化，让模型在训练中适应 8 位精度；我们的推理代码直接沿用训练时记录的量化设置，不需要再做训练后量化。',
     },
     quantCaption: {
       en: 'MXFP8 splits values into groups of 32 that share one power-of-two scale, and rounds each value to the nearest 8-bit float.',
@@ -213,7 +232,7 @@ export const t = {
     overview: {
       label: { en: 'From H3 to SparkWM', zh: '从 H3 到 SparkWM' },
       saves: { en: 'Reduces', zh: '减少的开销' },
-      result: { en: 'Seconds per chunk, one RTX 5090', zh: '每块耗时（一张 RTX 5090）' },
+      result: { en: 'End-to-end speed-up', zh: '端到端加速' },
       cards: [
         { name: { en: 'MiniMax H3 33B', zh: 'MiniMax H3 33B' }, note: { en: 'whole clip at once, about 30 steps', zh: '整段一起生成，约 30 步' }, cut: null },
         { name: { en: 'Chunk by chunk', zh: '逐块生成' }, note: { en: 'each chunk reads up to 5 preceding chunks from the cache', zh: '每块只从缓存读取前面最多 5 块' }, cut: { en: 'context read per chunk', zh: '每块读取的上下文' } },
@@ -340,14 +359,14 @@ export const t = {
   results: {
     title: { en: 'Speed-up', zh: '加速效果' },
     body: {
-      en: 'End-to-end time for SparkWM and H3 to generate the same clip, and SparkWM\u2019s time per chunk on one and four RTX 5090s.',
-      zh: 'SparkWM 与 H3 生成同一段视频的端到端耗时，以及 SparkWM 每块在一张和四张 RTX 5090 上的耗时。',
+      en: 'SparkWM runs on a single RTX 5090. Below: the end-to-end speed-up over H3 when SparkWM runs distributed over several RTX 5090s, and the time each takes for the same clip.',
+      zh: 'SparkWM 在单张 RTX 5090 上就能运行。下面是用多张 RTX 5090 分布式推理时相对 H3 的端到端加速，以及两者生成同一段视频的耗时。',
     },
     measuring: { en: 'Measurements pending', zh: '实测数据待补' },
-    headline: { en: 'End-to-end speed-up', zh: '端到端加速' },
+    headline: { en: 'End-to-end speed-up, distributed on RTX 5090s', zh: '端到端加速（多张 RTX 5090 分布式推理）' },
+    headlineN: { en: 'End-to-end speed-up, {n} RTX 5090s', zh: '端到端加速（{n} 张 RTX 5090）' },
+    single: { en: 'of audio-video on a single RTX 5090 (32 GB)', zh: '单张 RTX 5090（32 GB）上能生成的音视频长度' },
     latencyTitle: { en: 'End-to-end time', zh: '端到端耗时' },
-    perChunkOne: { en: 'Seconds per chunk, one RTX 5090', zh: '每块耗时（一张 RTX 5090）' },
-    perChunkFour: { en: 'Seconds per chunk, four RTX 5090s', zh: '每块耗时（四张 RTX 5090）' },
     setupPending: { en: 'Measurement setup to be added', zh: '测量条件待补' },
   },
   rollout: {

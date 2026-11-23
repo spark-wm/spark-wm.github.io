@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { DRAFT, affiliations, authors, bibtex, t } from '../content'
+import { DRAFT, affiliations, authorMarks, authorNotes, authors, bibtex, t } from '../content'
 import { tr } from '../state'
 import UiIcon from './UiIcon.vue'
 import BrandMark from './BrandMark.vue'
@@ -32,7 +32,7 @@ const bibLines = bibtex.split('\n')
       <div class="team">
         <h2>{{ tr(t.credits.title) }}</h2>
         <p v-if="authors.length" class="authors">
-          <span v-for="(a, i) in authors" :key="a.name">{{ a.name }}<sup>{{ a.aff.join(',') }}</sup><template v-if="i < authors.length - 1">, </template></span>
+          <span v-for="(a, i) in authors" :key="a.name">{{ a.name }}<sup>{{ authorMarks(a) }}</sup><template v-if="i < authors.length - 1">, </template></span>
         </p>
         <p v-else-if="DRAFT"><span class="pending">{{ tr(t.credits.authorsPending) }}</span></p>
         <ul class="affs">
@@ -42,6 +42,7 @@ const bibLines = bibtex.split('\n')
             <span>{{ tr(a.name) }}</span>
           </li>
         </ul>
+        <p v-if="authors.length" class="notes"><span v-for="(n, i) in authorNotes" :key="i">{{ tr(n) }}</span></p>
         <p class="ack">{{ tr(t.credits.ack) }}</p>
       </div>
       <div class="cite">
@@ -120,6 +121,13 @@ const bibLines = bibtex.split('\n')
   :root:not([data-theme='light']) .logo-2 {
     filter: brightness(0) invert(1);
   }
+}
+.notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  font-size: 13px;
+  color: var(--ink3);
 }
 .ack {
   color: var(--ink2);

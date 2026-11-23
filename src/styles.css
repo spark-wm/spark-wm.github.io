@@ -95,6 +95,32 @@
   color-scheme: dark;
 }
 
+/* Light theme: figures, charts and cards sit on light panels; only the video players keep a dark stage,
+   so the page is not half black blocks. */
+:root[data-theme='light'] {
+  --stage: #fbf9f5;
+  --stage2: #f2eee7;
+  --stage3: #e3ddd3;
+  --stage-ink: #15120e;
+  --stage-ink2: #5b554c;
+  --stage-ink3: #8a8378;
+  --stage-line: rgba(21, 18, 14, 0.13);
+  --stage-accent: #e45a00;
+  --stage-edge: rgba(21, 18, 14, 0.1);
+}
+:root[data-theme='light'] .player,
+:root[data-theme='light'] .reel {
+  --stage: #0e0d0b;
+  --stage2: #191713;
+  --stage3: #24211c;
+  --stage-ink: #ede8df;
+  --stage-ink2: #a29b8f;
+  --stage-ink3: #6e685e;
+  --stage-line: rgba(237, 232, 223, 0.14);
+  --stage-accent: #ff6a00;
+  --stage-edge: transparent;
+}
+
 *,
 *::before,
 *::after {

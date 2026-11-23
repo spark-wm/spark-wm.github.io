@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Overview of where SparkWM saves compute relative to H3: one card per change, what each one cuts,
-// and the resulting per-chunk time (pending until measured). Only facts stated elsewhere on the page.
+// and the resulting end-to-end speed-up (shown once measured). Only facts stated elsewhere on the page.
 import { computed, ref } from 'vue'
 import { efficiency, t } from '../content'
 import { tr, ui } from '../state'
@@ -11,7 +11,7 @@ const O = t.method.overview
 const root = ref<HTMLElement | null>(null)
 const seen = useInView(root, { ratio: 0.25 })
 const on = computed(() => seen.value || ui.reducedMotion)
-const perChunk = computed(() => efficiency.speed.oneGpu)
+const speedup = computed(() => efficiency.multi.speedup)
 
 // fixed "selected" cells for the sparse-attention sketch (about 10% of 48)
 const lit = new Set([3, 14, 22, 37, 41])
@@ -56,9 +56,9 @@ const lit = new Set([3, 14, 22, 37, 41])
         <p v-if="c.cut" class="cut-inline"><span class="cut-label">{{ tr(O.saves) }}</span><span class="cut-what"><UiIcon name="down" :size="14" class="down" />{{ tr(c.cut) }}</span></p>
       </li>
     </ol>
-    <div v-if="perChunk !== null" class="result">
+    <div v-if="speedup !== null" class="result">
       <p class="result-label">{{ tr(O.result) }}</p>
-      <p class="result-value"><span class="num big">{{ perChunk.toFixed(2) }}<span class="unit">s</span></span></p>
+      <p class="result-value"><span class="num big">{{ speedup >= 10 ? Math.round(speedup) : speedup.toFixed(1) }}<span class="unit">×</span></span></p>
     </div>
   </figure>
 </template>

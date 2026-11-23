@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DRAFT, affiliations, authors, links, t } from '../content'
+import { DRAFT, affiliations, authorMarks, authorNotes, authors, links, t } from '../content'
 import { tr } from '../state'
 import HeroReel from './HeroReel.vue'
 import FactsRow from './FactsRow.vue'
@@ -27,16 +27,18 @@ const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; labe
           <div class="who">
             <p v-if="authors.length" class="authors">
               <span v-for="(a, i) in authors" :key="a.name" class="author">
-                <a v-if="a.url" :href="a.url">{{ a.name }}</a><template v-else>{{ a.name }}</template><sup>{{ a.aff.join(',') }}</sup><template v-if="i < authors.length - 1">, </template>
+                <a v-if="a.url" :href="a.url">{{ a.name }}</a><template v-else>{{ a.name }}</template><sup>{{ authorMarks(a) }}</sup><template v-if="i < authors.length - 1">, </template>
               </span>
             </p>
             <p v-else-if="DRAFT" class="authors"><span class="pending">{{ tr(t.credits.authorsPending) }}</span></p>
             <ul class="affs">
               <li v-for="a in affiliations" :key="a.id">
+                <sup v-if="authors.length" class="num aff-n">{{ a.id }}</sup>
                 <img :src="logos[a.id]" :alt="tr(a.name)" :class="'logo logo-' + a.id" />
                 <span v-if="a.id !== 2">{{ tr(a.name) }}</span>
               </li>
             </ul>
+            <p v-if="authors.length" class="notes"><span v-for="(n, i) in authorNotes" :key="i">{{ tr(n) }}</span></p>
           </div>
           <div class="buttons">
             <template v-for="b in buttons" :key="b.key">
@@ -175,6 +177,18 @@ html:lang(zh-CN) .lead {
     filter: brightness(0) invert(1);
     opacity: 0.72;
   }
+}
+.aff-n {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-right: -4px;
+}
+.notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  font-size: 13px;
+  color: var(--ink3);
 }
 @media (max-width: 760px) {
   .base {
