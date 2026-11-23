@@ -59,8 +59,8 @@ export const wallSlots = 9
 export const facts: { value: string | null; unit?: string; label: L; countTo?: number }[] = [
   { value: null, label: { en: 'per chunk on one RTX 5090', zh: '每块耗时（一张 RTX 5090）' } },
   { value: '4', countTo: 4, label: { en: 'denoising steps per chunk', zh: '每块的去噪步数' } },
-  { value: '≈10', unit: '%', label: { en: 'of video tiles get exact attention, from chunk 3 on', zh: '的视频 token 组精确计算注意力（第 3 块起）' } },
-  { value: '≈0.7', unit: 's', label: { en: 'of video per chunk; each chunk reads up to 5 preceding chunks', zh: '每块的视频长度，生成时最多读取前面 5 块' } },
+  { value: '≈10', unit: '%', label: { en: 'of video token groups each query group attends to exactly, from chunk 3 on', zh: '每个查询组精确计算的视频 token 组占比（第 3 块起）' } },
+  { value: '≈0.7', unit: 's', label: { en: 'of video per chunk', zh: '每块的视频长度' } },
   { value: '33', unit: 'B', countTo: 33, label: { en: 'H3 parameters, frozen during training', zh: 'H3 参数，训练时冻结' } },
 ]
 
@@ -86,10 +86,10 @@ export const efficiency = {
 }
 
 export const bibtex = `@article{sparkwm2026,
-  title   = {SparkWM},
-  author  = {},
+  title = {SparkWM},
+  author = {},
   journal = {arXiv preprint},
-  year    = {2026}
+  year = {2026}
 }`
 
 // ---------------------------------------------------------------------------------------------
@@ -97,25 +97,32 @@ export const bibtex = `@article{sparkwm2026,
 // ---------------------------------------------------------------------------------------------
 
 export const t = {
+  pageTitle: { en: 'SparkWM: Audio-Video World Model', zh: 'SparkWM：音视频世界模型' },
   nav: {
     demos: { en: 'Demos', zh: '样片' },
-    method: { en: 'Acceleration', zh: '加速方法' },
-    results: { en: 'Speed', zh: '加速效果' },
+    method: { en: 'Method', zh: '加速方法' },
+    results: { en: 'Speed-up', zh: '加速效果' },
     training: { en: 'Training', zh: '训练' },
     citation: { en: 'Citation', zh: '引用' },
     lang: { en: '中文', zh: 'EN' },
     soundOn: { en: 'Sound on', zh: '声音已开' },
     soundOff: { en: 'Sound off', zh: '声音已关' },
     theme: { en: 'Switch colour theme', zh: '切换深浅色' },
+    toLight: { en: 'Switch to light theme', zh: '切换到浅色' },
+    toDark: { en: 'Switch to dark theme', zh: '切换到深色' },
+    sound: { en: 'Sound', zh: '声音' },
+    sections: { en: 'Sections', zh: '章节' },
+    langLabel: { en: 'Switch to Chinese', zh: '切换到英文' },
+    skip: { en: 'Skip to content', zh: '跳到正文' },
   },
   hero: {
     lead: {
-      en: 'SparkWM is an audio-video world model post-trained from MiniMax H3 33B. H3 generates a whole clip of about 6.6 s at once in about 30 denoising steps; SparkWM generates video and sound chunk by chunk, in only 4 denoising steps per chunk.',
-      zh: 'SparkWM 是由 330 亿参数的 MiniMax H3 后训练而成的音视频世界模型。H3 一次生成整段约 6.6 秒的视频，要去噪约 30 步；SparkWM 改为逐块生成视频和声音，每块只去噪 4 步。',
+      en: 'SparkWM is an audio-video world model post-trained from MiniMax H3 33B. H3 generates a whole audio-video clip of about 6.6 s at once in about 30 denoising steps; SparkWM generates it chunk by chunk, in only 4 denoising steps per chunk.',
+      zh: 'SparkWM 是由 MiniMax H3 33B（330 亿参数）后训练而成的音视频世界模型。H3 一次生成整段约 6.6 秒的音视频，要去噪约 30 步；SparkWM 改为逐块生成，每块只去噪 4 步。',
     },
     base: {
-      en: 'Each chunk covers about 0.7 s of video and is conditioned on a text prompt, the first frame and a camera trajectory. A chunk reads only the prompt, the first frame and up to 5 preceding chunks, so the cost per chunk does not grow with video length. From chunk 3 on, sparse attention further reduces the attention computation, and the model adapts to 8-bit precision (MXFP8) during training for deployment on the RTX 5090.',
-      zh: '每块是约 0.7 秒的视频，根据提示词、第一帧和相机轨迹生成。生成每一块时只读取提示词、第一帧和前面最多 5 块，因此每块的计算量不随视频变长而增加。从第 3 块起，稀疏注意力进一步减少了注意力的计算量；模型还在训练中适应了 8 位精度（MXFP8），计划部署在 RTX 5090 上。',
+      en: 'Each chunk covers about 0.7 s of video and is conditioned on a text prompt, the first frame and a camera trajectory. From its KV cache, a chunk reads only the prompt, the first frame and up to 5 preceding chunks, so the cost per chunk does not grow with video length. From chunk 3 on, sparse attention cuts compute further, and the model is trained with 8-bit (MXFP8) fake quantization, with deployment planned on the RTX 5090.',
+      zh: '每块是约 0.7 秒的视频，根据提示词、第一帧和相机轨迹生成。生成每一块时，从缓存只读取提示词、第一帧和前面最多 5 块，因此每块的计算量不随视频变长而增加。从第 3 块起改用稀疏注意力，进一步减少计算量；训练时还对模型做了 8 位精度（MXFP8）的伪量化，计划部署在 RTX 5090 上。',
     },
     paper: { en: 'Paper', zh: '论文' },
     code: { en: 'Code', zh: '代码' },
@@ -144,27 +151,27 @@ export const t = {
   },
   demos: {
     title: { en: 'Generated clips', zh: '生成样片' },
-    slot: { en: 'Clip', zh: '样片' },
+    more: { en: 'More clips', zh: '更多样片' },
     seconds: { en: 's', zh: '秒' },
     body: {
-      en: 'Every clip starts from a given first frame. Click any clip to play it with sound in the player below. The player\u2019s timeline replays the generation in order: when a chunk appears, the cached chunks it read are marked above it.',
-      zh: '每段样片都从给定的第一帧开始生成。点任意一段，下方的播放器会带声音播放它。播放器的时间轴按生成顺序回放：每一块出现时，上方标出它读取的缓存块。',
+      en: 'Every clip is generated chunk by chunk from a given first frame. The player steps through the chunks in generation order and marks, above the current chunk, the cached chunks it read.',
+      zh: '每段样片都从给定的第一帧开始逐块生成。播放器按生成顺序逐块推进，并在当前块上方标出它读取的缓存块。',
     },
   },
   method: {
-    title: { en: 'Acceleration', zh: '加速方法' },
+    title: { en: 'Method', zh: '加速方法' },
     body: {
-      en: 'H3 generates a whole clip of about 6.6 s at once, with full attention across all frames and about 30 denoising steps. SparkWM changes the generation scheme, the attention computation and the numeric precision.',
-      zh: 'H3 一次生成整段约 6.6 秒的视频，生成时所有帧之间做全量注意力，要去噪约 30 步。SparkWM 改变了生成方式、注意力的计算方式和模型的数值精度。',
+      en: 'H3 applies full attention across all frames of the clip. SparkWM changes the generation scheme, the number of denoising steps, the attention computation and the numeric precision.',
+      zh: 'H3 生成时所有帧之间做全量注意力。SparkWM 改变了生成方式、去噪步数、注意力的计算方式和模型的数值精度。',
     },
-    chunkTitle: { en: 'Chunk-by-chunk generation, 4 steps per chunk', zh: '逐块生成，每块 4 步' },
+    chunkTitle: { en: 'Chunk-by-chunk generation in 4 steps', zh: '逐块生成与 4 步去噪' },
     chunkBody: {
       en: 'Video is generated chunk by chunk, about 0.7 s each. For each chunk, SparkWM reads the prompt, the first frame and up to 5 preceding chunks from its KV cache, denoises in 4 steps, then writes the chunk into the cache and drops the oldest one. The cache never holds more than 5 chunks, so the cost per chunk does not grow with video length.',
       zh: '视频逐块生成，每块约 0.7 秒。生成一块时，SparkWM 从 KV 缓存读取提示词、第一帧和前面最多 5 块，去噪 4 步，再把这一块写入缓存、移出最早的一块。缓存始终不超过 5 块，所以每块的计算量不随视频变长而增加。',
     },
     chunkCaption: {
-      en: 'Frames from the rail-yard clip. Noise is drawn on pixels for illustration; the model denoises latents.',
-      zh: '画面取自铁路货场样片。噪声画在像素上只是示意，模型实际是在 latent 上去噪。',
+      en: 'Frames from the Rail yard clip. Noise is drawn on pixels for illustration; the model denoises latents.',
+      zh: '画面取自铁路货场样片；噪声画在像素上，模型实际在 latent 上去噪。',
     },
     condition: { en: 'Prompt and first frame', zh: '提示词和第一帧' },
     cache: { en: 'Five most recent chunks', zh: '最近 5 块' },
@@ -174,24 +181,24 @@ export const t = {
     done: { en: 'Done, written to the cache', zh: '完成，写入缓存' },
     sparseTitle: { en: 'Sparse attention with RoLA', zh: '稀疏注意力（RoLA）' },
     sparseBody: {
-      en: 'From chunk 3 on, attention switches to RoLA: queries and keys are split into tiles, and each query tile computes exact attention only over about 10% of the video tiles, those most similar to it, while a low-rank branch adds a cheap approximation over all tiles. The first 2 chunks keep full attention: their history is still short, so full attention costs little there.',
-      zh: '从第 3 块起，注意力换成 RoLA：查询和键分成若干 token 组，每个查询组只和最相关的约 10% 视频 token 组做精确计算，另有一条低秩支路对全部 token 组做代价很低的近似。开头 2 块历史还短，全量注意力代价不高，所以仍用全量注意力。',
+      en: 'From chunk 3 on, attention switches to RoLA: queries and keys are split into token groups, and each query group computes exact attention only over about 10% of the video token groups, those most similar to it, while a low-rank branch adds a cheap approximation over all groups. The first 2 chunks keep full attention: their history is still short, so full attention costs little there.',
+      zh: '从第 3 块起，注意力换成 RoLA：查询和键分成若干 token 组，每个查询组只和最相关的约 10% 视频 token 组做精确计算，另有一条低秩支路对全部 token 组做代价很低的近似。开头 2 块的历史还短、计算量小，仍用全量注意力。',
     },
     sparseCaption: {
-      en: 'Schematic with 10 tiles per chunk. Each query tile reads its selected 10% plus the tile at its own position, so the share shown is a little above 10%. A real chunk has 5,040 video tokens.',
-      zh: '示意图：每块画成 10 组。每个查询组读取选出的 10%，再加上同一位置的那一组，所以图上的比例略高于 10%。实际每块有 5040 个视频 token。',
+      en: 'Schematic with 10 token groups per chunk (a real chunk has 5,040 video tokens). Besides its selected 10%, each query group also reads the group at its own position, so the share it reads is slightly above 10%.',
+      zh: '示意图：每块画成 10 个 token 组（实际每块有 5040 个视频 token）。每个查询组除了选出的 10%，还读取同一位置的 token 组，所以实际读取的比例略高于 10%。',
     },
     full: { en: 'Full attention', zh: '全量注意力' },
     sparse: { en: 'SparkWM', zh: 'SparkWM' },
     exact: { en: 'computed exactly', zh: '精确计算' },
     lowrank: { en: 'low-rank branch', zh: '低秩支路' },
     always: { en: 'always read', zh: '固定读取' },
-    queries: { en: 'Query tiles of the current chunk', zh: '当前块的查询组' },
-    keys: { en: 'Key tiles', zh: '键组' },
-    quantTitle: { en: 'Quantization-aware training', zh: '量化感知训练' },
+    queries: { en: 'Query groups of the current chunk', zh: '当前块的查询 token 组' },
+    keys: { en: 'Key groups', zh: '键 token 组' },
+    quantTitle: { en: 'Quantization-aware training (QAT)', zh: '量化感知训练' },
     quantBody: {
-      en: 'SparkWM is meant to run on the RTX 5090 (32 GB). To this end, from training stage 5 on, the weights and activations of the backbone\u2019s attention and feed-forward layers are fake-quantized to MXFP8 in the forward pass, so the model adapts to 8-bit precision during training; our inference code runs with the quantization settings recorded in training, with no separate post-training quantization.',
-      zh: 'SparkWM 计划部署在 RTX 5090（32 GB 显存）上。为此，从训练阶段 5 起，前向计算就对主干网络注意力层和前馈层的权重和激活做 MXFP8 伪量化，让模型在训练中适应 8 位精度；我们的推理代码按训练时记录的量化设置运行，不需要再做训练后量化。',
+      en: 'SparkWM is planned for deployment on the RTX 5090 (32 GB). From training stage 5 on, the weights and activations of the backbone\u2019s attention and feed-forward layers are fake-quantized to MXFP8 in the forward pass, so the model adapts to 8-bit precision during training. Our inference code reuses the quantization settings recorded in training and needs no separate post-training quantization.',
+      zh: 'SparkWM 计划部署在 RTX 5090（32 GB 显存）上。为此，从训练阶段 5 起，前向计算就对主干网络注意力层和前馈层的权重和激活做 MXFP8 伪量化，让模型在训练中适应 8 位精度；我们的推理代码直接沿用训练时记录的量化设置，不需要再做训练后量化。',
     },
     quantCaption: {
       en: 'MXFP8 splits values into groups of 32 that share one power-of-two scale, and rounds each value to the nearest 8-bit float.',
@@ -205,14 +212,14 @@ export const t = {
     compareTitle: { en: 'Compared with H3', zh: '和 H3 对比' },
     overview: {
       label: { en: 'From H3 to SparkWM', zh: '从 H3 到 SparkWM' },
-      saves: { en: 'What it cuts', zh: '省下的' },
+      saves: { en: 'Reduces', zh: '减少的开销' },
       result: { en: 'Seconds per chunk, one RTX 5090', zh: '每块耗时（一张 RTX 5090）' },
       cards: [
         { name: { en: 'MiniMax H3 33B', zh: 'MiniMax H3 33B' }, note: { en: 'whole clip at once, about 30 steps', zh: '整段一起生成，约 30 步' }, cut: null },
-        { name: { en: 'Chunk by chunk', zh: '逐块生成' }, note: { en: 'each chunk reads at most 5 earlier ones', zh: '每块只读前面最多 5 块' }, cut: { en: 'cost stays flat as the video grows', zh: '计算量不随视频变长' } },
+        { name: { en: 'Chunk by chunk', zh: '逐块生成' }, note: { en: 'each chunk reads up to 5 preceding chunks from the cache', zh: '每块只从缓存读取前面最多 5 块' }, cut: { en: 'context read per chunk', zh: '每块读取的上下文' } },
         { name: { en: '4-step distillation', zh: '4 步蒸馏' }, note: { en: 'about 30 steps to 4 per chunk', zh: '约 30 步减到每块 4 步' }, cut: { en: 'denoising steps', zh: '去噪步数' } },
-        { name: { en: 'RoLA sparse attention', zh: 'RoLA 稀疏注意力' }, note: { en: 'about 10% exact, from chunk 3', zh: '第 3 块起约 10% 精确计算' }, cut: { en: 'attention compute', zh: '注意力计算' } },
-        { name: { en: 'MXFP8 QAT', zh: 'MXFP8 量化感知训练' }, note: { en: '8-bit weights and activations', zh: '权重和激活 8 位' }, cut: { en: 'weights from 16 to 8 bits', zh: '权重从 16 位到 8 位' } },
+        { name: { en: 'RoLA sparse attention', zh: 'RoLA 稀疏注意力' }, note: { en: 'from chunk 3, exact attention on about 10% of video token groups', zh: '第 3 块起，每个查询组只精确计算约 10% 的视频 token 组' }, cut: { en: 'attention compute', zh: '注意力计算量' } },
+        { name: { en: 'MXFP8 quantization-aware training', zh: 'MXFP8 量化感知训练' }, note: { en: 'weights and activations of the backbone attention and FFN layers in 8 bits', zh: '主干注意力和前馈层的权重和激活用 8 位' }, cut: { en: 'bit width, 16 to 8', zh: '位宽从 16 位降到 8 位' } },
       ] as { name: L; note: L; cut: L | null }[],
     },
   },
@@ -226,14 +233,14 @@ export const t = {
       {
         name: { en: 'Camera control', zh: '相机控制' },
         body: {
-          en: 'A LoRA is added to H3 and trained on clips with stereo sound, so that the video follows a given camera trajectory. The model still generates the whole clip at once; from stage 5 on, it serves as the score model for DMD.',
-          zh: '在 H3 上加一个 LoRA，用带立体声的视频片段训练，让画面跟随给定的相机轨迹。这一阶段模型仍然整段生成；从阶段 5 起，它用作 DMD 的打分模型。',
+          en: 'A LoRA is added to H3 and trained so that the video follows a given camera trajectory; the training clips carry stereo sound. The model still generates the whole clip at once; from stage 5 on, it serves, frozen, as the real score model of DMD and initializes the fake score model.',
+          zh: '在 H3 上加一个 LoRA 并训练它，让画面跟随给定的相机轨迹；训练片段都带立体声。这一阶段模型仍然整段生成；从阶段 5 起，它冻结后用作 DMD 的 real 打分模型，也用来初始化 fake 打分模型。',
         },
       },
       {
         name: { en: 'Chunk-causal training', zh: '块因果训练' },
         body: {
-          en: 'The model is trained with teacher forcing to generate chunk by chunk: each chunk attends to the prompt, the first frame, itself and clean versions of at most the 5 preceding chunks, the same window as the inference cache. Sound is split into chunks as well.',
+          en: 'The model is trained with teacher forcing to generate chunk by chunk: each chunk attends to the prompt, the first frame, itself and the clean versions of up to 5 preceding chunks, the same window as the inference cache. Sound is split into chunks as well.',
           zh: '用 teacher forcing 训练模型逐块生成：每一块能看到提示词、第一帧、它自己，以及前面最多 5 块的干净版本，范围与推理时的缓存相同。声音也逐块切分。',
         },
       },
@@ -245,21 +252,21 @@ export const t = {
         },
       },
       {
-        name: { en: 'Four-step distillation', zh: '4 步蒸馏' },
+        name: { en: '4-step distillation', zh: '4 步蒸馏' },
         body: {
           en: 'Causal consistency distillation reduces about 30 steps to 4. The teacher is the full-attention model from stage 2 and the student is the sparse model from stage 3, so the student learns 4-step generation while also learning to correct the error introduced by sparse attention.',
           zh: '用因果一致性蒸馏把约 30 步减到 4 步。教师是阶段 2 的全量注意力模型，学生是阶段 3 的稀疏注意力模型，因此学生在学习 4 步生成的同时，也在学着纠正稀疏注意力带来的误差。',
         },
       },
       {
-        name: { en: 'Quantization-aware training', zh: '量化感知训练' },
+        name: { en: 'Self-forcing with quantization-aware training', zh: '自生成历史与量化感知训练' },
         body: {
-          en: 'From this stage on, training is quantization-aware with MXFP8. At the same time, the student switches to training on its own chunk-by-chunk history with Self Gradient Forcing (SGF) and DMD, with gradients backpropagated through that history.',
+          en: 'From this stage on, training is quantization-aware with MXFP8, and the student is trained on its own chunk-by-chunk history with Self Gradient Forcing (SGF) and DMD, backpropagating gradients through that history.',
           zh: '从这一阶段起做 MXFP8 量化感知训练。同时，学生改为在自己逐块生成的历史上用 Self Gradient Forcing（SGF）和 DMD 训练，梯度沿这段历史反向传播。',
         },
       },
       {
-        name: { en: 'Cache-writer and denoiser LoRAs', zh: '写缓存 LoRA 与去噪 LoRA' },
+        name: { en: 'Cache-writing and denoising parameters', zh: '写缓存参数与去噪参数' },
         body: {
           en: 'Training switches to SGF+: the student has two copies of its LoRA and RoLA, one writing finished chunks into the cache and one denoising the current chunk.',
           zh: '改用 SGF+：学生的 LoRA 和 RoLA 各有两份，一份把生成好的块写进缓存，一份给当前块去噪。',
@@ -269,7 +276,7 @@ export const t = {
         name: { en: 'Mixed-length extrapolation', zh: '混合长度外推' },
         body: {
           en: 'Rollout lengths vary from about 7 to 20 s across samples. The score models take a window of about 6.6 s at a time, so longer rollouts are scored in sliding windows.',
-          zh: '每条样本的生成长度在约 7 到 20 秒之间变化。打分模型每次处理约 6.6 秒的窗口，长样本按滑动窗口分段打分。',
+          zh: '每条样本的生成长度从约 7 秒到 20 秒不等。打分模型每次处理约 6.6 秒的窗口，长样本按滑动窗口分段打分。',
         },
       },
     ] as { name: L; body: L }[],
@@ -297,10 +304,10 @@ export const t = {
       teacher: { en: 'teacher, full attention', zh: '教师：全量注意力' },
       student: { en: 'student, sparse', zh: '学生：稀疏注意力' },
       ownHistory: { en: 'self-generated history', zh: '自己生成的历史' },
-      real: { en: 'real score', zh: 'real 打分模型' },
-      fake: { en: 'fake score', zh: 'fake 打分模型' },
-      writer: { en: 'cache-writer LoRA', zh: '写缓存 LoRA' },
-      denoiser: { en: 'denoiser LoRA', zh: '去噪 LoRA' },
+      real: { en: 'real score model', zh: 'real 打分模型' },
+      fake: { en: 'fake score model', zh: 'fake 打分模型' },
+      writer: { en: 'cache-writing parameters', zh: '写缓存参数' },
+      denoiser: { en: 'denoising parameters', zh: '去噪参数' },
       sees: { en: 'sees past and future', zh: '前后都能看到' },
       past: { en: 'sees up to 5 preceding chunks', zh: '最多看前面 5 块' },
       lengths: { en: '', zh: '' },
@@ -310,7 +317,7 @@ export const t = {
       sparse10: { en: 'about 10% exact', zh: '约 10% 精确计算' },
       noise: { en: 'noise', zh: '噪声' },
       clean: { en: 'clean', zh: '干净' },
-      teacher30: { en: 'teacher: full attention, about 30 steps', zh: '教师：全量注意力，约 30 步' },
+      teacher30: { en: 'teacher: full attention', zh: '教师：全量注意力' },
       student4: { en: 'student: sparse attention, 4 steps', zh: '学生：稀疏注意力，4 步' },
       levels48: { en: '48 noise levels', zh: '48 个噪声水平' },
       generate: { en: 'student generates chunk by chunk', zh: '学生逐块生成' },
@@ -333,10 +340,11 @@ export const t = {
   results: {
     title: { en: 'Speed-up', zh: '加速效果' },
     body: {
-      en: 'End-to-end time for H3 and SparkWM to generate the same clip.',
-      zh: 'H3 和 SparkWM 生成同一段视频的端到端耗时。',
+      en: 'End-to-end time for SparkWM and H3 to generate the same clip, and SparkWM\u2019s time per chunk on one and four RTX 5090s.',
+      zh: 'SparkWM 与 H3 生成同一段视频的端到端耗时，以及 SparkWM 每块在一张和四张 RTX 5090 上的耗时。',
     },
-    headline: { en: 'faster end to end', zh: '端到端加速' },
+    measuring: { en: 'Measurements pending', zh: '实测数据待补' },
+    headline: { en: 'End-to-end speed-up', zh: '端到端加速' },
     latencyTitle: { en: 'End-to-end time', zh: '端到端耗时' },
     perChunkOne: { en: 'Seconds per chunk, one RTX 5090', zh: '每块耗时（一张 RTX 5090）' },
     perChunkFour: { en: 'Seconds per chunk, four RTX 5090s', zh: '每块耗时（四张 RTX 5090）' },
@@ -345,16 +353,16 @@ export const t = {
   rollout: {
     title: { en: 'Long videos', zh: '长视频' },
     body: {
-      en: 'The Rail yard and Bathhouse clips above are each about 29 chunks long. They were generated by a checkpoint from before stage 7 (mixed-length extrapolation), which had only produced 10-chunk rollouts in training, so the clips are almost three times as long as anything it generated in training. The strips below show one frame every 5 s.',
-      zh: '上面的铁路货场和浴场两段样片各约 29 块，由阶段 7（混合长度外推）之前的模型生成。当时模型在训练中每次只生成 10 块，所以样片长度接近训练时生成长度的三倍。下面每 5 秒取一帧。',
+      en: 'The Rail yard and Bathhouse clips above are each about 29 chunks long. They were generated by a checkpoint taken before stage 7 (mixed-length extrapolation), whose training rollouts were only 10 chunks long, so each clip is almost three times the length it was trained on. The strips below show one frame every 5 s.',
+      zh: '上面的铁路货场和浴场两段样片各约 29 块，由阶段 7（混合长度外推）之前的模型生成。当时模型在训练中每次只生成 10 块，所以样片长度接近训练时生成长度的三倍。下面的画面条每 5 秒取一帧。',
     },
   },
   credits: {
     title: { en: 'Team', zh: '团队' },
     authorsPending: { en: 'Author list to be added', zh: '作者名单待补' },
     ack: {
-      en: 'SparkWM is post-trained from MiniMax H3 33B and builds on SolarWM, RoLA, SparkDiffusion, Light Forcing, ForgeWM, Causal Forcing and Causal Forcing++, Self Gradient Forcing and SGF+, DMD2 and PRoPE. Use of H3 and its outputs follows the MiniMax H3 Community License.',
-      zh: 'SparkWM 在 MiniMax H3 33B 上后训练而成，用到了 SolarWM、RoLA、SparkDiffusion、Light Forcing、ForgeWM、Causal Forcing 与 Causal Forcing++、Self Gradient Forcing 与 SGF+、DMD2 和 PRoPE 的工作。H3 及其输出的使用遵守 MiniMax H3 Community License。',
+      en: 'SparkWM is post-trained from MiniMax H3 33B and builds on SolarWM, RoLA, SparkDiffusion, Light Forcing, ForgeWM, Causal Forcing and Causal Forcing++, Self Forcing, Self Gradient Forcing and SGF+, DMD2 and PRoPE. Use of H3 and its outputs follows the MiniMax H3 Community License.',
+      zh: 'SparkWM 在 MiniMax H3 33B 上后训练而成，用到了 SolarWM、RoLA、SparkDiffusion、Light Forcing、ForgeWM、Causal Forcing 与 Causal Forcing++、Self Forcing、Self Gradient Forcing 与 SGF+、DMD2 和 PRoPE 的工作。H3 及其输出的使用遵守 MiniMax H3 Community License。',
     },
     cite: { en: 'Citation', zh: '引用' },
     copy: { en: 'Copy', zh: '复制' },

@@ -12,13 +12,14 @@ import RolloutSection from './components/RolloutSection.vue'
 import CreditsSection from './components/CreditsSection.vue'
 
 const banner = computed(() => tr(t.draftBanner))
-watchEffect(() => { document.title = 'SparkWM' })
+watchEffect(() => { document.title = tr(t.pageTitle) })
 </script>
 
 <template>
+  <a class="skip" href="#main">{{ tr(t.nav.skip) }}</a>
   <div v-if="DRAFT" class="draft-banner" role="note">{{ banner }}</div>
   <TopNav />
-  <main>
+  <main id="main" tabindex="-1">
     <HeroSection />
     <DemoSection />
     <MethodSection />
@@ -30,10 +31,36 @@ watchEffect(() => { document.title = 'SparkWM' })
 </template>
 
 <style>
-.draft-banner {
-  padding: 8px 16px;
+/* visually hidden until focused from the keyboard */
+.skip:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.skip:focus {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 100;
+  padding: 8px 14px;
+  border-radius: 6px;
   background: var(--ink);
   color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+main:focus {
+  outline: none;
+}
+.draft-banner {
+  padding: 8px 16px;
+  background: var(--bg2);
+  color: var(--ink2);
+  border-bottom: 1px solid var(--line);
   font-size: 13px;
   line-height: 1.4;
   text-align: center;

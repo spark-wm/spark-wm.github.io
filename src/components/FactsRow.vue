@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
-import { DRAFT, facts, t } from '../content'
+import { facts, t } from '../content'
 import { tr, ui } from '../state'
 import { useInView } from '../composables/useInView'
 
 const root = ref<HTMLElement | null>(null)
 const seen = useInView(root, { ratio: 0.4 })
-const shown = facts.filter((f) => f.value !== null || DRAFT)
-const display = ref(shown.map((f) => (f.countTo !== undefined && !ui.reducedMotion ? '0' : f.value ?? '')))
+// numbers not yet measured are left out here; the Speed-up section is the one place that marks them pending
+const shown = facts.filter((f) => f.value !== null)
+// start from the real values so screenshots, print and no-scroll readers never see zeros
+const display = ref(shown.map((f) => f.value ?? ''))
 let raf = 0
 
 watch(seen, (on) => {
   if (!on || ui.reducedMotion) return
+  display.value = shown.map((f) => (f.countTo !== undefined ? '0' : f.value ?? ''))
   const t0 = performance.now()
   const D = 900
   const step = (now: number) => {
@@ -29,7 +32,7 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   <ul ref="root" class="facts">
     <li v-for="(f, i) in shown" :key="i" class="fact">
       <p class="value num">
-        <template v-if="f.value !== null">{{ display[i] }}<span v-if="f.unit" class="unit">{{ f.unit }}</span></template>
+        <template v-if="f.value !== null"><span v-if="display[i].startsWith('≈')" class="approx">≈</span>{{ display[i].replace('≈', '') }}<span v-if="f.unit" class="unit">{{ f.unit }}</span></template>
         <span v-else class="pending">{{ tr(t.pending) }}</span>
       </p>
       <p class="label">{{ tr(f.label) }}</p>
@@ -61,6 +64,13 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   letter-spacing: -0.03em;
   min-height: 1em;
   margin-left: -0.03em;
+}
+.approx {
+  font-size: 0.55em;
+  font-weight: 600;
+  color: var(--ink2);
+  vertical-align: 0.3em;
+  margin-right: 0.04em;
 }
 .unit {
   font-size: 0.5em;

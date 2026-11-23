@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// Speed-up: headline factor, per-chunk time, an end-to-end latency chart (log scale) and the step /
-// attention comparison with H3. Every number comes from content.ts; empty ones show a pending marker
-// in DRAFT builds, and the chart draws a skeleton until both latencies are filled.
+// Speed-up: headline factor, per-chunk time on one and four RTX 5090s, and an end-to-end latency chart
+// (log scale). Every number comes from content.ts (efficiency.latency, efficiency.speed). Until they are
+// measured, a DRAFT build shows one pending marker and equal-width placeholder bars (so no speed-up is
+// implied); a release build hides the whole section.
 import { computed, ref } from 'vue'
 import { DRAFT, efficiency, t } from '../content'
 import { tr, ui } from '../state'
@@ -17,6 +18,9 @@ const base = rows[0]
 const ours = rows.find((r) => r.ours) ?? rows[rows.length - 1]
 const known = rows.every((r) => r.seconds !== null)
 const speedup = known && base.seconds && ours.seconds ? base.seconds / ours.seconds : null
+const sp = efficiency.speed
+const anyData = known || sp.oneGpu !== null || sp.fourGpu !== null
+const show = anyData || DRAFT
 
 // log axis from the decade below the fastest to the decade above the slowest
 const lo = known ? Math.pow(10, Math.floor(Math.log10(Math.min(...rows.map((r) => r.seconds as number))))) : 1
@@ -27,39 +31,41 @@ const ticks = computed(() => {
   for (let v = lo; v <= hi * 1.0001; v *= 10) out.push(v)
   return out
 })
-const width = (r: (typeof rows)[number], i: number) => (r.seconds !== null && known ? pos(r.seconds) : i === 0 ? 92 : 26)
+const width = (r: (typeof rows)[number]) => (known && r.seconds !== null ? pos(r.seconds) : 100)
 const fmtS = (v: number) => (v >= 100 ? Math.round(v).toLocaleString() : v >= 10 ? v.toFixed(1) : v.toFixed(2))
-
-const sp = efficiency.speed
+const markerText = computed(() => (speedup === null ? '' : ui.lang === 'zh' ? `${Math.round(speedup)} 倍加速` : `${Math.round(speedup)}× faster`))
 </script>
 
 <template>
-  <section id="results" ref="root" class="block">
+  <section v-if="show" id="results" ref="root" class="block">
     <div class="wrap">
       <div class="block-head">
         <h2>{{ tr(R.title) }}</h2>
-        <p class="lead text muted-lead">{{ tr(R.body) }}</p>
+        <div class="head-copy">
+          <p class="lead text muted-lead">{{ tr(R.body) }}</p>
+          <p v-if="!anyData && DRAFT"><span class="pending">{{ tr(R.measuring) }}</span></p>
+        </div>
       </div>
 
       <div class="stats">
         <div class="stat headline">
           <p class="stat-value num">
             <template v-if="speedup !== null">{{ Math.round(speedup) }}<span class="x">×</span></template>
-            <template v-else><span class="x ghost">×</span><span v-if="DRAFT" class="pending">{{ tr(t.pending) }}</span></template>
+            <span v-else class="dash" role="img" :aria-label="tr(t.pending)" />
           </p>
           <p class="stat-label">{{ tr(R.headline) }}</p>
         </div>
         <div class="stat">
           <p class="stat-value num">
             <template v-if="sp.oneGpu !== null">{{ sp.oneGpu.toFixed(2) }}<span class="u">s</span></template>
-            <span v-else-if="DRAFT" class="pending">{{ tr(t.pending) }}</span>
+            <span v-else class="dash" role="img" :aria-label="tr(t.pending)" />
           </p>
           <p class="stat-label">{{ tr(R.perChunkOne) }}</p>
         </div>
         <div class="stat">
           <p class="stat-value num">
             <template v-if="sp.fourGpu !== null">{{ sp.fourGpu.toFixed(2) }}<span class="u">s</span></template>
-            <span v-else-if="DRAFT" class="pending">{{ tr(t.pending) }}</span>
+            <span v-else class="dash" role="img" :aria-label="tr(t.pending)" />
           </p>
           <p class="stat-label">{{ tr(R.perChunkFour) }}</p>
         </div>
@@ -69,7 +75,6 @@ const sp = efficiency.speed
         <figcaption class="chart-head">
           <span class="chart-title">{{ tr(R.latencyTitle) }}</span>
           <span v-if="efficiency.latency.setup" class="chart-setup">{{ tr(efficiency.latency.setup) }}</span>
-          <span v-else-if="DRAFT" class="pending">{{ tr(R.setupPending) }}</span>
         </figcaption>
         <div class="plot">
           <div v-if="known" class="axis" aria-hidden="true">
@@ -81,37 +86,18 @@ const sp = efficiency.speed
               <p class="who-note">{{ tr(r.note) }}</p>
             </div>
             <div class="track">
-              <span class="bar" :style="{ width: grow ? width(r, i) + '%' : '0%', transitionDelay: i * 0.2 + 's' }" />
+              <span class="bar" :style="{ width: grow ? width(r) + '%' : '0%', transitionDelay: i * 0.2 + 's' }" />
               <span class="val num">
                 <template v-if="r.seconds !== null">{{ fmtS(r.seconds) }} s</template>
-                <span v-else-if="DRAFT" class="pending">{{ tr(t.pending) }}</span>
+                <span v-else class="dash small" role="img" :aria-label="tr(t.pending)" />
               </span>
             </div>
           </div>
-          <div v-if="speedup !== null" class="marker" :style="{ left: `calc(var(--who) + (100% - var(--who)) * ${width(ours, 1) / 100})` }">
-            <span class="marker-label num">{{ ui.lang === 'zh' ? `快 ${Math.round(speedup)} 倍` : `${Math.round(speedup)}× faster` }}</span>
+          <div v-if="speedup !== null" class="marker" :style="{ left: `calc(var(--who) + (100% - var(--who)) * ${width(ours) / 100})` }">
+            <span class="marker-label num">{{ markerText }}</span>
           </div>
         </div>
       </figure>
-
-      <div class="cmp">
-        <h3 class="cmp-title">{{ tr(t.method.compareTitle) }}</h3>
-        <div v-for="(r, i) in efficiency.rows" :key="i" class="cmp-row">
-          <p class="cmp-label">{{ tr(r.label) }}</p>
-          <div class="bars">
-            <div class="bar-line">
-              <span class="cmp-who">{{ tr(t.efficiency.before) }}</span>
-              <span class="cmp-track"><span class="fill before" :style="{ width: grow ? '100%' : '0%' }" /></span>
-              <span class="cmp-val num">{{ tr(r.beforeText) }}</span>
-            </div>
-            <div class="bar-line">
-              <span class="cmp-who strong">{{ tr(t.efficiency.after) }}</span>
-              <span class="cmp-track"><span class="fill after" :style="{ width: grow ? (100 * r.after) / r.before + '%' : '0%', transitionDelay: '0.25s' }" /></span>
-              <span class="cmp-val num strong">{{ tr(r.afterText) }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 </template>
@@ -120,33 +106,40 @@ const sp = efficiency.speed
 .muted-lead {
   color: var(--ink2);
 }
+.head-copy {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
 .stats {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 .stat {
-  padding: 22px 22px 20px;
-  border-radius: 12px;
+  --pending-ink: var(--stage-ink2);
+  --pending-line: var(--stage-line);
+  padding: 22px 24px 20px;
+  border-radius: 14px;
   background: var(--stage);
   color: var(--stage-ink);
   box-shadow: inset 0 0 0 1px var(--stage-edge);
   display: grid;
   align-content: space-between;
   gap: 14px;
-  min-height: 150px;
+  min-height: 132px;
 }
 .stat.headline {
-  background: linear-gradient(135deg, rgba(255, 106, 0, 0.22), rgba(255, 106, 0, 0.05) 60%), var(--stage);
-  box-shadow: inset 0 0 0 1px rgba(255, 106, 0, 0.4);
+  background: linear-gradient(135deg, rgba(255, 106, 0, 0.2), rgba(255, 106, 0, 0.04) 60%), var(--stage);
+  box-shadow: inset 0 0 0 1px rgba(255, 106, 0, 0.35);
 }
 .stat-value {
   display: flex;
   align-items: baseline;
   gap: 10px;
   font-size: clamp(48px, 6vw, 80px);
-  font-weight: 750;
+  font-weight: 700;
   font-stretch: 110%;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -154,12 +147,26 @@ const sp = efficiency.speed
 .stat:not(.headline) .stat-value {
   font-size: clamp(36px, 4vw, 52px);
 }
+/* a short rule stands in for a number not measured yet */
+.dash {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.07em;
+  min-height: 3px;
+  margin: 0.45em 0 0.1em;
+  border-radius: 2px;
+  background: var(--stage-ink3);
+}
+.dash.small {
+  width: 18px;
+  height: 2px;
+  min-height: 2px;
+  margin: 0;
+  vertical-align: middle;
+}
 .x {
   font-size: 0.6em;
   color: var(--stage-accent);
-}
-.x.ghost {
-  opacity: 0.5;
 }
 .u {
   font-size: 0.45em;
@@ -170,10 +177,10 @@ const sp = efficiency.speed
   color: var(--stage-ink2);
 }
 .chart {
-  --who: 200px;
+  --who: 210px;
   margin: 0;
-  padding: 22px 24px 26px;
-  border-radius: 12px;
+  padding: 24px 26px 28px;
+  border-radius: 14px;
   background: var(--stage);
   color: var(--stage-ink);
   box-shadow: inset 0 0 0 1px var(--stage-edge);
@@ -200,6 +207,9 @@ const sp = efficiency.speed
   gap: 18px;
   padding-top: 26px;
 }
+.skeleton .plot {
+  padding-top: 0;
+}
 .axis {
   position: absolute;
   left: var(--who);
@@ -213,7 +223,7 @@ const sp = efficiency.speed
   top: 0;
   bottom: 0;
   transform: translateX(-50%);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--stage-ink3);
   border-left: 1px dashed var(--stage-line);
   padding-left: 4px;
@@ -224,7 +234,7 @@ const sp = efficiency.speed
   align-items: center;
 }
 .who-name {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 650;
 }
 .ours .who-name {
@@ -238,12 +248,12 @@ const sp = efficiency.speed
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 34px;
+  gap: 14px;
+  height: 36px;
 }
 .bar {
   height: 100%;
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--stage-ink3);
   transition: width 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
@@ -251,12 +261,10 @@ const sp = efficiency.speed
   background: linear-gradient(90deg, #ff6a00, #ffb800);
 }
 .skeleton .bar {
-  background: repeating-linear-gradient(135deg, var(--stage3) 0 6px, transparent 6px 12px);
-  box-shadow: inset 0 0 0 1px var(--stage-line);
+  background: var(--stage3);
 }
 .skeleton .ours .bar {
-  background: repeating-linear-gradient(135deg, rgba(255, 106, 0, 0.35) 0 6px, transparent 6px 12px);
-  box-shadow: inset 0 0 0 1px rgba(255, 106, 0, 0.45);
+  background: rgba(255, 106, 0, 0.22);
 }
 .val {
   font-size: 15px;
@@ -278,66 +286,6 @@ const sp = efficiency.speed
   color: var(--stage-accent);
   white-space: nowrap;
 }
-.cmp {
-  display: grid;
-  margin-top: clamp(48px, 6vw, 80px);
-  border-top: 1px solid var(--line2);
-}
-.cmp-title {
-  padding: 20px 0 4px;
-}
-.cmp-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr);
-  gap: 24px;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--line);
-  align-items: center;
-}
-.cmp-label {
-  font-size: 18px;
-  font-weight: 600;
-}
-.bars {
-  display: grid;
-  gap: 10px;
-}
-.bar-line {
-  display: grid;
-  grid-template-columns: 84px minmax(0, 1fr) 210px;
-  gap: 14px;
-  align-items: center;
-}
-.cmp-who {
-  font-size: 15px;
-  color: var(--ink2);
-}
-.strong {
-  color: var(--ink);
-  font-weight: 650;
-}
-.cmp-track {
-  height: 14px;
-  border-radius: 3px;
-  background: var(--bg2);
-  overflow: hidden;
-}
-.fill {
-  display: block;
-  height: 100%;
-  border-radius: 3px;
-  transition: width 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.fill.before {
-  background: var(--ink3);
-}
-.fill.after {
-  background: linear-gradient(90deg, #ff6a00, #ffb800);
-}
-.cmp-val {
-  font-size: 15px;
-  color: var(--ink2);
-}
 @media (max-width: 860px) {
   .stats {
     grid-template-columns: 1fr 1fr;
@@ -357,20 +305,9 @@ const sp = efficiency.speed
   .marker {
     display: none;
   }
-  .cmp-row {
-    grid-template-columns: 1fr;
-  }
-  .bar-line {
-    grid-template-columns: 64px minmax(0, 1fr);
-  }
-  .cmp-val {
-    grid-column: 2;
-    margin-top: -6px;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bar,
-  .fill {
+  .bar {
     transition: none;
   }
 }

@@ -2,7 +2,7 @@
 // Overview of where SparkWM saves compute relative to H3: one card per change, what each one cuts,
 // and the resulting per-chunk time (pending until measured). Only facts stated elsewhere on the page.
 import { computed, ref } from 'vue'
-import { DRAFT, efficiency, t } from '../content'
+import { efficiency, t } from '../content'
 import { tr, ui } from '../state'
 import { useInView } from '../composables/useInView'
 import UiIcon from './UiIcon.vue'
@@ -53,19 +53,12 @@ const lit = new Set([3, 14, 22, 37, 41])
         </svg>
         <p class="name">{{ tr(c.name) }}</p>
         <p class="note">{{ tr(c.note) }}</p>
-        <p v-if="c.cut" class="cut-inline"><UiIcon name="down" :size="14" class="down" />{{ tr(c.cut) }}</p>
+        <p v-if="c.cut" class="cut-inline"><span class="cut-label">{{ tr(O.saves) }}</span><span class="cut-what"><UiIcon name="down" :size="14" class="down" />{{ tr(c.cut) }}</span></p>
       </li>
     </ol>
-    <div class="saves" aria-hidden="true">
-      <p class="saves-label">{{ tr(O.saves) }}</p>
-      <p v-for="(c, i) in O.cards.slice(1)" :key="i" class="cut"><UiIcon name="down" :size="14" class="down" />{{ c.cut ? tr(c.cut) : '' }}</p>
-    </div>
-    <div class="result">
+    <div v-if="perChunk !== null" class="result">
       <p class="result-label">{{ tr(O.result) }}</p>
-      <p class="result-value">
-        <span v-if="perChunk !== null" class="num big">{{ perChunk.toFixed(2) }}<span class="unit">s</span></span>
-        <span v-else-if="DRAFT" class="pending">{{ tr(t.pending) }}</span>
-      </p>
+      <p class="result-value"><span class="num big">{{ perChunk.toFixed(2) }}<span class="unit">s</span></span></p>
     </div>
   </figure>
 </template>
@@ -73,17 +66,13 @@ const lit = new Set([3, 14, 22, 37, 41])
 <style scoped>
 .ov {
   margin: 0 0 clamp(56px, 7vw, 96px);
-  padding: clamp(18px, 2.4vw, 28px);
-  border-radius: 12px;
-  background: var(--stage);
   color: var(--stage-ink);
-  box-shadow: inset 0 0 0 1px var(--stage-edge);
 }
 .ov-label {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--stage-ink2);
-  margin-bottom: 16px;
+  color: var(--ink2);
+  margin-bottom: 14px;
 }
 .cards {
   list-style: none;
@@ -91,16 +80,16 @@ const lit = new Set([3, 14, 22, 37, 41])
   padding: 0;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
 }
 .card {
   position: relative;
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  padding: 16px 14px 18px;
-  border-radius: 10px;
-  background: var(--stage2);
+  padding: 20px 18px 20px;
+  border-radius: 14px;
+  background: var(--stage);
   box-shadow: inset 0 0 0 1px var(--stage-line);
   opacity: 0;
   transform: translateY(8px);
@@ -113,17 +102,18 @@ const lit = new Set([3, 14, 22, 37, 41])
 .card:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: 50%;
-  right: -11px;
-  width: 8px;
-  height: 8px;
-  border-top: 1.5px solid var(--stage-accent);
-  border-right: 1.5px solid var(--stage-accent);
-  transform: translateY(-50%) rotate(45deg);
+  top: 66px;
+  right: -18px;
+  width: 18px;
+  height: 1.5px;
+  background: var(--stage-accent);
 }
 .card.base {
-  background: transparent;
+  background: var(--stage);
   box-shadow: inset 0 0 0 1px var(--stage-line);
+}
+.card.base .name {
+  color: var(--stage-ink2);
 }
 .idx {
   display: inline-grid;
@@ -142,8 +132,8 @@ const lit = new Set([3, 14, 22, 37, 41])
 }
 .mini {
   width: 100%;
-  height: auto;
-  margin: 6px 0 4px;
+  height: 64px;
+  margin: 10px 0 6px;
 }
 .dim {
   fill: var(--stage3);
@@ -167,7 +157,7 @@ const lit = new Set([3, 14, 22, 37, 41])
   stroke-linejoin: round;
 }
 .name {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 650;
   line-height: 1.3;
 }
@@ -177,26 +167,19 @@ const lit = new Set([3, 14, 22, 37, 41])
   color: var(--stage-ink2);
 }
 .cut-inline {
-  display: none;
-}
-.saves {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 14px;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: 10px;
   border-top: 1px solid var(--stage-line);
-}
-.saves-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--stage-ink2);
-}
-.cut {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--stage-ink);
   line-height: 1.4;
+}
+.cut-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--stage-ink3);
 }
 .down {
   display: inline-block;
@@ -237,7 +220,8 @@ const lit = new Set([3, 14, 22, 37, 41])
     gap: 10px;
   }
   .card {
-    grid-template-columns: 28px minmax(0, 1fr) 120px;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 110px;
     grid-template-areas: 'idx name mini' 'idx note mini' 'idx cut mini';
     column-gap: 12px;
     row-gap: 2px;
@@ -258,17 +242,13 @@ const lit = new Set([3, 14, 22, 37, 41])
   .mini {
     grid-area: mini;
     align-self: center;
+    height: 44px;
     margin: 0;
   }
   .cut-inline {
-    display: block;
     grid-area: cut;
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 4px;
-  }
-  .saves {
-    display: none;
+    margin-top: 6px;
+    padding-top: 8px;
   }
   .result {
     flex-direction: column;

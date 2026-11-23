@@ -23,6 +23,7 @@ async function copy() {
   copied.value = true
   setTimeout(() => (copied.value = false), 1800)
 }
+const bibLines = bibtex.split('\n')
 </script>
 
 <template>
@@ -45,13 +46,13 @@ async function copy() {
       </div>
       <div class="cite">
         <div class="cite-head">
-          <h3>{{ tr(t.credits.cite) }}</h3>
+          <h2>{{ tr(t.credits.cite) }}</h2>
           <button class="btn copy" @click="copy">
             <UiIcon :name="copied ? 'check' : 'copy'" :size="18" />
             <span>{{ copied ? tr(t.credits.copied) : tr(t.credits.copy) }}</span>
           </button>
         </div>
-        <pre class="bib num">{{ bibtex }}</pre>
+        <pre class="bib num"><template v-for="(line, i) in bibLines" :key="i"><template v-if="DRAFT && line.trim() === 'author = {},'">  author = {<span class="pending">{{ tr(t.credits.authorsPending) }}</span>},</template><template v-else>{{ line }}</template>{{ i < bibLines.length - 1 ? '\n' : '' }}</template></pre>
       </div>
     </div>
     <footer class="wrap foot">

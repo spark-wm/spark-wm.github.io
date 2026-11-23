@@ -4,14 +4,15 @@ import { DRAFT, affiliations, authors, links, t } from '../content'
 import { tr } from '../state'
 import HeroReel from './HeroReel.vue'
 import FactsRow from './FactsRow.vue'
+import UiIcon from './UiIcon.vue'
 import pku from '../assets/logos/pku.svg'
 import alibaba from '../assets/logos/alibaba.svg'
 
 const logos: Record<number, string> = { 1: pku, 2: alibaba }
-const buttons = computed(() => [
-  { key: 'paper', label: tr(t.hero.paper), url: links.paper, primary: true },
-  { key: 'code', label: tr(t.hero.code), url: links.code, primary: false },
-  { key: 'weights', label: tr(t.hero.weights), url: links.weights, primary: false },
+const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; label: string; url: string; primary: boolean }[]>(() => [
+  { key: 'paper', icon: 'paper' as const, label: tr(t.hero.paper), url: links.paper, primary: true },
+  { key: 'code', icon: 'code' as const, label: tr(t.hero.code), url: links.code, primary: false },
+  { key: 'weights', icon: 'weights' as const, label: tr(t.hero.weights), url: links.weights, primary: false },
 // weights: no release decided yet, so no placeholder either
 ].filter((b) => b.url || (DRAFT && b.key !== 'weights')))
 </script>
@@ -21,33 +22,33 @@ const buttons = computed(() => [
     <div class="wrap">
       <div class="head">
         <h1 class="title">Spark<span class="wm">WM</span></h1>
-        <div class="who">
-          <p v-if="authors.length" class="authors">
-            <span v-for="(a, i) in authors" :key="a.name" class="author">
-              <a v-if="a.url" :href="a.url">{{ a.name }}</a><template v-else>{{ a.name }}</template><sup>{{ a.aff.join(',') }}</sup><template v-if="i < authors.length - 1">, </template>
-            </span>
-          </p>
-          <p v-else-if="DRAFT" class="authors"><span class="pending">{{ tr(t.credits.authorsPending) }}</span></p>
-          <ul class="affs">
-            <li v-for="a in affiliations" :key="a.id">
-              <img :src="logos[a.id]" :alt="tr(a.name)" :class="'logo logo-' + a.id" />
-              <span v-if="a.id !== 2">{{ tr(a.name) }}</span>
-            </li>
-          </ul>
-        </div>
-        <div class="side">
-          <p class="lead">{{ tr(t.hero.lead) }}</p>
-          <p class="base">{{ tr(t.hero.base) }}</p>
-        </div>
-        <div class="buttons">
-          <template v-for="b in buttons" :key="b.key">
-            <a v-if="b.url" class="btn" :class="{ primary: b.primary }" :href="b.url" target="_blank" rel="noopener">{{ b.label }}</a>
-            <span v-else class="btn" aria-disabled="true">{{ b.label }}<span class="soon">{{ tr(t.hero.soon) }}</span></span>
-          </template>
+        <p class="lead">{{ tr(t.hero.lead) }}</p>
+        <div class="meta">
+          <div class="who">
+            <p v-if="authors.length" class="authors">
+              <span v-for="(a, i) in authors" :key="a.name" class="author">
+                <a v-if="a.url" :href="a.url">{{ a.name }}</a><template v-else>{{ a.name }}</template><sup>{{ a.aff.join(',') }}</sup><template v-if="i < authors.length - 1">, </template>
+              </span>
+            </p>
+            <p v-else-if="DRAFT" class="authors"><span class="pending">{{ tr(t.credits.authorsPending) }}</span></p>
+            <ul class="affs">
+              <li v-for="a in affiliations" :key="a.id">
+                <img :src="logos[a.id]" :alt="tr(a.name)" :class="'logo logo-' + a.id" />
+                <span v-if="a.id !== 2">{{ tr(a.name) }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="buttons">
+            <template v-for="b in buttons" :key="b.key">
+              <a v-if="b.url" class="btn pill" :class="{ primary: b.primary }" :href="b.url" target="_blank" rel="noopener"><UiIcon :name="b.icon" :size="16" />{{ b.label }}</a>
+              <span v-else class="btn pill" aria-disabled="true"><UiIcon :name="b.icon" :size="16" />{{ b.label }}<span class="soon">{{ tr(t.hero.soon) }}</span></span>
+            </template>
+          </div>
         </div>
       </div>
 
       <HeroReel />
+      <p class="base">{{ tr(t.hero.base) }}</p>
       <FactsRow />
     </div>
   </section>
@@ -55,20 +56,15 @@ const buttons = computed(() => [
 
 <style scoped>
 .hero {
-  padding: clamp(28px, 5vw, 64px) 0 clamp(64px, 8vw, 112px);
+  padding: clamp(28px, 4.4vw, 56px) 0 clamp(64px, 8vw, 112px);
 }
 .head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(20px, 2.4vw, 32px) 40px;
-  margin-bottom: clamp(28px, 3.4vw, 44px);
+  gap: clamp(18px, 2vw, 26px);
+  margin-bottom: clamp(28px, 3vw, 40px);
 }
 .title .wm {
   color: var(--brand-amber);
-}
-.who {
-  align-self: end;
-  padding-bottom: 14px;
 }
 .title {
   font-size: clamp(64px, 10.4vw, 152px);
@@ -78,41 +74,55 @@ const buttons = computed(() => [
   letter-spacing: -0.045em;
   margin-left: -0.04em;
 }
-.side {
-  display: grid;
-  gap: 12px;
-  max-width: 860px;
-}
 .lead {
-  font-size: clamp(20px, 2.1vw, 30px);
-  line-height: 1.38;
+  max-width: 900px;
+  font-size: clamp(20px, 1.9vw, 27px);
+  line-height: 1.42;
   font-weight: 500;
   letter-spacing: -0.005em;
 }
 html:lang(zh-CN) .lead {
-  line-height: 1.6;
+  line-height: 1.62;
   letter-spacing: 0;
 }
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 40px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+}
 .base {
+  max-width: 900px;
+  margin: calc(-1 * clamp(8px, 1.6vw, 24px)) 0 clamp(32px, 4vw, 48px);
   color: var(--ink2);
-  font-size: 16px;
+  font-size: 17px;
+  line-height: 1.65;
 }
 .buttons {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-  align-self: end;
-  justify-content: flex-end;
+}
+.pill {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 15px;
+}
+.pill[aria-disabled='true'] {
+  border-style: solid;
+  color: var(--ink2);
 }
 .soon {
+  font-size: 13px;
   font-weight: 500;
   color: var(--ink3);
 }
 .who {
   display: grid;
   gap: 10px;
-  justify-items: end;
-  text-align: right;
 }
 .authors {
   font-size: 15px;
@@ -147,11 +157,15 @@ html:lang(zh-CN) .lead {
   filter: brightness(0);
   opacity: 0.72;
 }
+.logo-1 {
+  height: 28px;
+}
 :root[data-theme='dark'] .logo-1 {
   filter: grayscale(1) contrast(1.5) brightness(0.8) invert(1);
 }
 :root[data-theme='dark'] .logo-2 {
   filter: brightness(0) invert(1);
+  opacity: 0.72;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .logo-1 {
@@ -159,22 +173,17 @@ html:lang(zh-CN) .lead {
   }
   :root:not([data-theme='light']) .logo-2 {
     filter: brightness(0) invert(1);
+    opacity: 0.72;
   }
 }
-@media (max-width: 860px) {
-  .head {
-    grid-template-columns: 1fr;
+@media (max-width: 760px) {
+  .base {
+    font-size: 16px;
   }
-  .who {
-    order: 4;
-    padding-bottom: 0;
-  }
-  .buttons {
-    justify-content: flex-start;
-  }
-  .who {
-    justify-items: start;
-    text-align: left;
+}
+@media (max-width: 400px) {
+  .title {
+    font-size: 16.5vw;
   }
 }
 </style>

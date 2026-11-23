@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Hand-drawn icon set for this site: 20x20 grid, 1.75 stroke, round joins.
-defineProps<{ name: 'play' | 'pause' | 'sound-on' | 'sound-off' | 'theme' | 'copy' | 'check' | 'chevron' | 'down'; size?: number }>()
+defineProps<{ name: 'play' | 'pause' | 'sound-on' | 'sound-off' | 'theme' | 'copy' | 'check' | 'chevron' | 'down' | 'paper' | 'code' | 'weights'; size?: number }>()
 </script>
 
 <template>
@@ -26,6 +26,9 @@ defineProps<{ name: 'play' | 'pause' | 'sound-on' | 'sound-off' | 'theme' | 'cop
     </template>
     <template v-else-if="name === 'check'"><path d="M4.5 10.5l3.6 3.4 7.4-8" /></template>
     <template v-else-if="name === 'chevron'"><path d="M5 7.5l5 5 5-5" /></template>
+    <template v-else-if="name === 'paper'"><path d="M5.5 2.8h6l3 3v11.4h-9z" /><path d="M11.5 2.8v3h3M8 10h4.5M8 13h4.5" /></template>
+    <template v-else-if="name === 'code'"><path d="M7.5 6l-4 4 4 4M12.5 6l4 4-4 4" /></template>
+    <template v-else-if="name === 'weights'"><path d="M10 3l6.5 3.6v6.8L10 17l-6.5-3.6V6.6z" /><path d="M3.5 6.6L10 10.2l6.5-3.6M10 10.2V17" /></template>
     <template v-else-if="name === 'down'"><path d="M10 3.5v12M5 11l5 5 5-5" /></template>
   </svg>
 </template>

@@ -3,15 +3,15 @@
 @font-face {
   font-family: 'Archivo';
   src: url('./assets/fonts/archivo.woff2') format('woff2');
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
+  font-weight: 400 750;
+  font-stretch: 100% 116%;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Newsreader';
   src: url('./assets/fonts/newsreader-italic.woff2') format('woff2');
-  font-weight: 200 800;
+  font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
@@ -32,7 +32,7 @@
   --line: rgba(21, 18, 14, 0.12);
   --line2: rgba(21, 18, 14, 0.22);
   --accent: #ec5f00;
-  --accent-ink: #b84700;
+  --accent-ink: #a63f00;
   --accent-soft: rgba(236, 95, 0, 0.12);
   --brand-amber: #db8400;
   --stage: #0e0d0b;
@@ -181,6 +181,7 @@ html:lang(zh-CN) h3 {
 }
 h2 {
   font-size: clamp(34px, 4.8vw, 60px);
+  font-weight: 620;
 }
 h3 {
   font-size: clamp(22px, 2.2vw, 28px);
@@ -205,7 +206,7 @@ p {
 }
 
 section.block {
-  padding: clamp(72px, 9vw, 128px) 0;
+  padding: clamp(64px, 7.5vw, 112px) 0;
 }
 section.block + section.block {
   border-top: 1px solid var(--line);
@@ -214,6 +215,18 @@ section.block + section.block {
   display: grid;
   gap: 20px;
   margin-bottom: clamp(32px, 4vw, 56px);
+}
+@media (min-width: 980px) {
+  .block-head {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: 56px;
+    align-items: end;
+  }
+  .block-head > .lead,
+  .block-head > div {
+    max-width: none;
+    padding-bottom: 0.35em;
+  }
 }
 
 .btn {
@@ -245,16 +258,19 @@ section.block + section.block {
 }
 .btn[aria-disabled='true'] {
   cursor: default;
-  color: var(--ink3);
-  border-style: dashed;
+  color: var(--ink2);
   background: none;
 }
+.btn[aria-disabled='true']:hover {
+  border-color: var(--line2);
+}
 
+/* placeholders stay grey so they never read as data or as the brand colour */
 .pending {
   display: inline-flex;
   align-items: center;
-  border: 1px dashed var(--accent);
-  color: var(--accent-ink);
+  border: 1px dashed var(--pending-line, var(--line2));
+  color: var(--pending-ink, var(--ink2));
   border-radius: 4px;
   padding: 0 6px;
   font-size: 13px;
@@ -287,5 +303,7 @@ section.block + section.block {
 .player,
 .stage-fig,
 .panel {
+  --pending-ink: var(--stage-ink2);
+  --pending-line: var(--stage-line);
   box-shadow: inset 0 0 0 1px var(--stage-edge);
 }

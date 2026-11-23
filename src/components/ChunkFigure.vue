@@ -109,12 +109,15 @@ function restart() {
 watch(live, (on) => { if (on && !paused.value) restart(); else clearTimeout(timer) })
 function togglePause() { paused.value = !paused.value; if (!paused.value) restart(); else clearTimeout(timer) }
 
-onMounted(() => {
-  makeNoise()
+// the frame sprite is large (one tile per chunk), so it loads only when the figure is near the viewport
+const near = useInView(root, { ratio: 0, margin: '800px' })
+watch(near, (n) => {
+  if (!n || img) return
   img = new Image()
   img.onload = draw
   img.src = sprite
 })
+onMounted(makeNoise)
 onBeforeUnmount(() => { clearTimeout(timer); cancelAnimationFrame(raf) })
 </script>
 

@@ -103,6 +103,8 @@ function onPause(e: Event) {
 }
 
 let io: IntersectionObserver | null = null
+// on a data-saver connection the reel waits for a tap instead of autoplaying
+const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true
 const onResize = () => { small.value = window.innerWidth < 760 }
 onMounted(() => {
   io = new IntersectionObserver((entries) => {
@@ -112,7 +114,7 @@ onMounted(() => {
       reportVisibility(ID, visible)
       const v = video.value
       if (!v) continue
-      if (px > 120 && v.paused && !userPaused && !ui.reducedMotion) play()
+      if (px > 120 && v.paused && !userPaused && !ui.reducedMotion && !saveData) play()
       else if (px < 60 && !v.paused) v.pause()
     }
   }, { threshold: [0, 0.15, 0.3, 0.45, 0.6, 0.8, 1] })
@@ -147,7 +149,7 @@ watch(small, () => {
         :muted="true"
         playsinline
         loop
-        preload="auto"
+        preload="metadata"
         disablepictureinpicture
         @play="onPlay"
         @pause="onPause"

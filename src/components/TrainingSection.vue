@@ -64,7 +64,7 @@ const current = computed(() => heading(active.value) + tr(t.training.stages[acti
 
         <ol class="steps">
           <li v-for="(st, i) in t.training.stages" :key="i" ref="steps" :data-i="i" class="step" :class="{ on: i === active }" @click="active = i">
-            <h3>{{ heading(i) }}{{ tr(st.name) }}</h3>
+            <h3><span class="k">{{ heading(i) }}</span>{{ tr(st.name) }}</h3>
             <p>{{ tr(st.body) }}</p>
           </li>
         </ol>
@@ -116,6 +116,7 @@ const current = computed(() => heading(active.value) + tr(t.training.stages[acti
 .cap-name {
   font-size: 15px;
   font-weight: 600;
+  visibility: hidden;
 }
 .pp {
   width: 32px;
@@ -139,7 +140,7 @@ const current = computed(() => heading(active.value) + tr(t.training.stages[acti
 }
 .rail button {
   width: 100%;
-  padding: 8px 0;
+  padding: 11px 0;
 }
 .rail .bar {
   display: block;
@@ -160,16 +161,25 @@ const current = computed(() => heading(active.value) + tr(t.training.stages[acti
   padding: 0;
 }
 .step {
-  min-height: 42vh;
-  padding: 8px 0 40px;
+  min-height: 32vh;
+  padding: 6px 0 40px;
   display: grid;
   align-content: start;
   gap: 14px;
-  opacity: 0.38;
-  transition: opacity 0.3s;
+  cursor: pointer;
 }
-.step.on {
-  opacity: 1;
+.step h3 {
+  color: var(--ink2);
+  transition: color 0.3s;
+}
+.step h3 .k {
+  transition: color 0.3s;
+}
+.step.on h3 {
+  color: var(--ink);
+}
+.step.on h3 .k {
+  color: var(--accent-ink);
 }
 .step p {
   color: var(--ink2);
@@ -244,6 +254,9 @@ const current = computed(() => heading(active.value) + tr(t.training.stages[acti
   .panel {
     padding: 12px 12px 8px;
   }
+  .cap-name {
+    visibility: visible;
+  }
   .rail {
     margin-top: 6px;
   }
@@ -252,11 +265,7 @@ const current = computed(() => heading(active.value) + tr(t.training.stages[acti
   }
   .step {
     min-height: 0;
-    opacity: 0.45;
     padding: 0 0 32px;
-  }
-  .step.on {
-    opacity: 1;
   }
 }
 </style>

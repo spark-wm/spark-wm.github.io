@@ -34,16 +34,15 @@ function toggleSound() { ui.sound = !ui.sound }
       <a href="#top" class="brand" aria-label="SparkWM">
         <BrandMark :size="28" wordmark />
       </a>
-      <nav class="links" aria-label="Sections">
+      <nav class="links" :aria-label="tr(t.nav.sections)">
         <a v-for="s in sections" :key="s" :href="'#' + s" :class="{ on: active === s }">{{ label(s) }}</a>
       </nav>
       <div class="tools">
-        <button class="tool sound" :class="{ on: ui.sound }" :aria-pressed="ui.sound" @click="toggleSound">
+        <button class="tool sound" :class="{ on: ui.sound }" :aria-pressed="ui.sound" :aria-label="tr(t.nav.sound)" :title="ui.sound ? tr(t.nav.soundOn) : tr(t.nav.soundOff)" @click="toggleSound">
           <UiIcon :name="ui.sound ? 'sound-on' : 'sound-off'" />
-          <span class="tool-text">{{ ui.sound ? tr(t.nav.soundOn) : tr(t.nav.soundOff) }}</span>
         </button>
-        <button class="tool" :aria-label="tr(t.nav.theme)" :title="tr(t.nav.theme)" @click="toggleTheme"><UiIcon name="theme" /></button>
-        <button class="tool lang" @click="toggleLang">{{ tr(t.nav.lang) }}</button>
+        <button class="tool" :aria-label="isDark() ? tr(t.nav.toLight) : tr(t.nav.toDark)" :title="tr(t.nav.theme)" @click="toggleTheme"><UiIcon name="theme" /></button>
+        <button class="tool lang" :class="{ sys: ui.lang === 'en' }" :aria-label="tr(t.nav.langLabel)" @click="toggleLang"><span :lang="ui.lang === 'en' ? 'zh-CN' : 'en'">{{ tr(t.nav.lang) }}</span></button>
       </div>
     </div>
   </header>
@@ -139,5 +138,9 @@ function toggleSound() { ui.sound = !ui.sound }
   .row {
     gap: 8px;
   }
+}
+/* "中文" in the English page uses a system CJK font, so the Noto subset is not fetched just for it */
+.tool.lang.sys {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
 }
 </style>

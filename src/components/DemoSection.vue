@@ -10,7 +10,8 @@ const firstInReel = reelMeta.segments[0]?.id
 const index = ref(Math.max(0, clips.findIndex((c) => c.id !== firstInReel)))
 const clip = computed(() => clips[index.value])
 /** Empty slots are a preview-only placeholder for clips still to come. */
-const empty = computed(() => (DRAFT ? Math.max(0, wallSlots - clips.length) : 0))
+// a draft shows one placeholder for the clips still to come, not a wall of empty frames
+const empty = computed(() => (DRAFT && clips.length < wallSlots ? 1 : 0))
 const theater = ref<HTMLElement | null>(null)
 
 // Wall tiles loop muted while they are in view; nothing loads before that.
@@ -85,7 +86,7 @@ onBeforeUnmount(() => io?.disconnect())
         </li>
         <li v-for="k in empty" :key="'slot' + k" class="slot">
           <span class="frame ph"><span class="pending">{{ tr(t.pending) }}</span></span>
-          <span class="cap"><span class="name">{{ tr(t.demos.slot) }} {{ clips.length + k }}</span></span>
+          <span class="cap"><span class="name">{{ tr(t.demos.more) }}</span></span>
         </li>
       </ul>
 

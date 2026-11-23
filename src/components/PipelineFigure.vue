@@ -88,7 +88,7 @@ const s0 = computed(() => {
   const labels: Label[] = [
     { x: 24, y: 24, text: tr(L.wholeClip) },
     { x: 456, y: 24, text: tr(L.steps30), anchor: 'end', strong: true },
-    { x: 456, y: 180, text: tr(L.sound), anchor: 'end' },
+    { x: 24, y: 196, text: tr(L.sound) },
     { x: 24, y: 290, text: tr(L.camera) },
   ]
   return { sl, noise, arcs, bars, cam: { x: bz(0), y: bz(1), ang }, path: `M${P[0][0]} ${P[0][1]} C ${P[1][0]} ${P[1][1]}, ${P[2][0]} ${P[2][1]}, ${P[3][0]} ${P[3][1]}`, labels }
@@ -202,12 +202,11 @@ const s6 = computed(() => {
   const scale = (456 - 24) / 145
   const grow = ease(seg(q, 0.02, 0.34))
   const width = Lt * scale * grow
+  // score_windows (length_extrapolation.py): 47-latent windows, stride 45, covering [0, L - 3);
+  // the last window starts at L - 50 so it ends flush with the supervised range
   const starts: number[] = []
-  for (let k = 0; ; k++) {
-    const s = Math.min(k * 45, Lt - 47)
-    starts.push(s)
-    if (s + 47 >= Lt) break
-  }
+  for (let s = 0; s <= Lt - 50; s += 45) starts.push(s)
+  if (starts[starts.length - 1] !== Lt - 50) starts.push(Lt - 50)
   const active = Math.min(starts.length - 1, Math.floor(seg(q, 0.4, 0.96) * starts.length))
   const showWin = q >= 0.4
   const sec = Lt * (158 / 24 / 47)

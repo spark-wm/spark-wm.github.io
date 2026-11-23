@@ -5,6 +5,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { DRAFT, mediaPath, t, type Clip } from '../content'
 import { isDark, reportVisibility, tr, ui } from '../state'
 import UiIcon from './UiIcon.vue'
+import { useInView } from '../composables/useInView'
 
 const props = defineProps<{ clip: Clip; playerId: string; priority?: boolean }>()
 
@@ -223,8 +224,11 @@ let ro: ResizeObserver | null = null
 const onResize = () => { small.value = window.innerWidth < 760 }
 const mq = typeof matchMedia !== 'undefined' ? matchMedia('(prefers-color-scheme: dark)') : null
 
+// media (poster, strip, spectrogram, video metadata) loads only once the player is within ~800px of view
+const near = useInView(root, { ratio: 0, margin: '800px' })
+watch(near, (n) => { if (n) loadSpec() })
+
 onMounted(() => {
-  loadSpec()
   io = new IntersectionObserver((entries) => {
     for (const e of entries) {
       // share of the viewport this player fills; a tall player can be well in view at a low ratio
@@ -234,7 +238,7 @@ onMounted(() => {
       const v = video.value
       if (!v) continue
       const enough = props.priority ? px > 120 : visible >= 0.45
-      if (enough && v.paused && !userPaused) play()
+      if (enough && v.paused && !userPaused && !ui.reducedMotion) play()
       else if (px < 60 && !v.paused) v.pause()
     }
   }, { threshold: [0, 0.15, 0.3, 0.45, 0.6, 0.8, 1] })
@@ -259,8 +263,8 @@ onBeforeUnmount(() => {
 watch(() => props.clip.id, () => {
   time.value = 0
   playing.value = false
-  loadSpec()
-  nextTick(() => { if (visible >= 0.3 && !userPaused) play() })
+  if (near.value) loadSpec()
+  nextTick(() => { if (visible >= 0.3 && !userPaused && !ui.reducedMotion) play() })
 })
 watch(() => [ui.theme, isDark()], drawSpec)
 </script>
@@ -272,11 +276,11 @@ watch(() => [ui.theme, isDark()], drawSpec)
         ref="video"
         :key="clip.id + (small ? '-sd' : '-hd')"
         :src="src"
-        :poster="poster"
+        :poster="near ? poster : undefined"
         :muted="true"
         playsinline
         loop
-        :preload="priority ? 'auto' : 'metadata'"
+        :preload="!near ? 'none' : priority ? 'auto' : 'metadata'"
         @play="onPlay"
         @pause="onPause"
         @seeked="tick"
@@ -338,7 +342,7 @@ watch(() => [ui.theme, isDark()], drawSpec)
               :key="k"
               class="cell"
               :class="{ past: k - 1 < cur, now: k - 1 === cur, future: k - 1 > cur, inmem: k - 1 >= memStart && k - 1 < cur }"
-              :style="thumbs && k - 1 <= cur ? { backgroundImage: `url(${strip})`, backgroundSize: `${N * 100}% 100%`, backgroundPosition: `${((k - 1) / (N - 1)) * 100}% 0` } : undefined"
+              :style="thumbs && near && k - 1 <= cur ? { backgroundImage: `url(${strip})`, backgroundSize: `${N * 100}% 100%`, backgroundPosition: `${((k - 1) / (N - 1)) * 100}% 0` } : undefined"
             >
               <span v-if="k - 1 === cur" class="fill" :style="{ width: Math.min(100, ((time - cur * cs) / cs) * 100) + '%' }" />
             </div>
@@ -535,7 +539,7 @@ watch(() => [ui.theme, isDark()], drawSpec)
   top: 2px;
   transform: translateX(-50%);
   font-size: 12px;
-  color: var(--stage-ink3);
+  color: var(--stage-ink2);
   white-space: nowrap;
 }
 .tick:first-child {
