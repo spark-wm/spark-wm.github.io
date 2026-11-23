@@ -29,6 +29,7 @@ export const authors: Author[] = [
   { name: 'Yixiang Cai', aff: [1] },
   { name: 'Zekun Zhang', aff: [1], corr: true },
   { name: 'Tengxu Sun', aff: [2], corr: true },
+  { name: 'Haoyu Li', aff: [2] },
   { name: 'Baole Ai', aff: [2] },
   { name: 'Ang Wang', aff: [2] },
   { name: 'Jiamang Wang', aff: [2] },
@@ -106,7 +107,7 @@ export const efficiency = {
 
 export const bibtex = `@article{sparkwm2026,
   title = {SparkWM},
-  author = {Liu, Yuxi and Huang, Zhengyang and Sun, Haiming and Ruan, Shikun and Liu, Tianle and Cai, Yixiang and Zhang, Zekun and Sun, Tengxu and Ai, Baole and Wang, Ang and Wang, Jiamang and Qu, Lin and Yuan, Kun},
+  author = {Liu, Yuxi and Huang, Zhengyang and Sun, Haiming and Ruan, Shikun and Liu, Tianle and Cai, Yixiang and Zhang, Zekun and Sun, Tengxu and Li, Haoyu and Ai, Baole and Wang, Ang and Wang, Jiamang and Qu, Lin and Yuan, Kun},
   journal = {arXiv preprint},
   year = {2026}
 }`
