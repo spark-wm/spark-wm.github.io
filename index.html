@@ -1,12 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SparkWM</title>
     <meta name="description" content="SparkWM is an audio-video world model post-trained from MiniMax H3 33B. It generates video and sound chunk by chunk; each chunk covers about 0.7 s of video and takes 4 denoising steps, and from chunk 3 on sparse attention reduces the attention computation." />
-    <meta name="theme-color" content="#F3F0EA" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0D0C0A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0A0A0B" />
     <!-- Link previews need absolute URLs: change both when the page moves to its release address. -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://spark-wm.github.io/" />
@@ -23,7 +22,7 @@
     <script>
       try {
         var s = localStorage.getItem('sparkwm-theme');
-        if (s === 'light' || s === 'dark') document.documentElement.dataset.theme = s;
+        document.documentElement.dataset.theme = s === 'light' ? 'light' : 'dark';
         var l = localStorage.getItem('sparkwm-lang') || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
         document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
       } catch (e) {}

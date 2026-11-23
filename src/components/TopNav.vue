@@ -7,7 +7,7 @@ import UiIcon from './UiIcon.vue'
 
 const scrolled = ref(false)
 const active = ref('')
-const sections = ['demos', 'method', 'training', 'citation'] as const
+const sections = ['demos', 'method', 'results', 'training', 'citation'] as const
 const label = (k: (typeof sections)[number]) => tr(t.nav[k])
 
 let io: IntersectionObserver | null = null

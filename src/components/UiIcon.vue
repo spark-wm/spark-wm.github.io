@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Hand-drawn icon set for this site: 20x20 grid, 1.75 stroke, round joins.
-defineProps<{ name: 'play' | 'pause' | 'sound-on' | 'sound-off' | 'theme' | 'copy' | 'check' | 'chevron'; size?: number }>()
+defineProps<{ name: 'play' | 'pause' | 'sound-on' | 'sound-off' | 'theme' | 'copy' | 'check' | 'chevron' | 'down'; size?: number }>()
 </script>
 
 <template>
@@ -26,5 +26,6 @@ defineProps<{ name: 'play' | 'pause' | 'sound-on' | 'sound-off' | 'theme' | 'cop
     </template>
     <template v-else-if="name === 'check'"><path d="M4.5 10.5l3.6 3.4 7.4-8" /></template>
     <template v-else-if="name === 'chevron'"><path d="M5 7.5l5 5 5-5" /></template>
+    <template v-else-if="name === 'down'"><path d="M10 3.5v12M5 11l5 5 5-5" /></template>
   </svg>
 </template>

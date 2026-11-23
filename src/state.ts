@@ -14,7 +14,8 @@ function initialTheme(): 'auto' | 'light' | 'dark' {
     const s = localStorage.getItem('sparkwm-theme')
     if (s === 'light' || s === 'dark') return s
   } catch { /* storage blocked */ }
-  return 'auto'
+  // the page is designed dark first; the toggle still offers light
+  return 'dark'
 }
 
 export const ui = reactive({

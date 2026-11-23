@@ -6,6 +6,7 @@ import TopNav from './components/TopNav.vue'
 import HeroSection from './components/HeroSection.vue'
 import DemoSection from './components/DemoSection.vue'
 import MethodSection from './components/MethodSection.vue'
+import ResultsSection from './components/ResultsSection.vue'
 import TrainingSection from './components/TrainingSection.vue'
 import RolloutSection from './components/RolloutSection.vue'
 import CreditsSection from './components/CreditsSection.vue'
@@ -21,6 +22,7 @@ watchEffect(() => { document.title = 'SparkWM' })
     <HeroSection />
     <DemoSection />
     <MethodSection />
+    <ResultsSection />
     <TrainingSection />
     <RolloutSection />
     <CreditsSection />

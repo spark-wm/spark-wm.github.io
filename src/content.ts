@@ -72,6 +72,17 @@ export const efficiency = {
   ],
   /** Seconds per chunk on one / four RTX 5090. null = pending. */
   speed: { oneGpu: null as number | null, fourGpu: null as number | null },
+  /**
+   * End-to-end time to generate the same clip, H3 vs SparkWM. seconds null = pending; the speed-up is
+   * computed from the first and the `ours` row once both are filled. `setup` is the measurement condition.
+   */
+  latency: {
+    setup: null as L | null,
+    rows: [
+      { name: { en: 'H3', zh: 'H3' }, note: { en: 'whole clip at once, about 30 steps', zh: '整段一起生成，约 30 步' }, seconds: null as number | null, ours: false },
+      { name: { en: 'SparkWM', zh: 'SparkWM' }, note: { en: 'chunk by chunk, 4 steps per chunk', zh: '逐块生成，每块 4 步' }, seconds: null as number | null, ours: true },
+    ],
+  },
 }
 
 export const bibtex = `@article{sparkwm2026,
@@ -89,6 +100,7 @@ export const t = {
   nav: {
     demos: { en: 'Demos', zh: '样片' },
     method: { en: 'Acceleration', zh: '加速方法' },
+    results: { en: 'Speed', zh: '加速效果' },
     training: { en: 'Training', zh: '训练' },
     citation: { en: 'Citation', zh: '引用' },
     lang: { en: '中文', zh: 'EN' },
@@ -191,6 +203,18 @@ export const t = {
     qSnap: { en: 'MXFP8 value', zh: 'MXFP8 取值' },
     qGrid: { en: 'representable 8-bit values', zh: '可取的 8 位浮点值' },
     compareTitle: { en: 'Compared with H3', zh: '和 H3 对比' },
+    overview: {
+      label: { en: 'From H3 to SparkWM', zh: '从 H3 到 SparkWM' },
+      saves: { en: 'What it cuts', zh: '省下的' },
+      result: { en: 'Seconds per chunk, one RTX 5090', zh: '每块耗时（一张 RTX 5090）' },
+      cards: [
+        { name: { en: 'MiniMax H3 33B', zh: 'MiniMax H3 33B' }, note: { en: 'whole clip at once, about 30 steps', zh: '整段一起生成，约 30 步' }, cut: null },
+        { name: { en: 'Chunk by chunk', zh: '逐块生成' }, note: { en: 'each chunk reads at most 5 earlier ones', zh: '每块只读前面最多 5 块' }, cut: { en: 'cost stays flat as the video grows', zh: '计算量不随视频变长' } },
+        { name: { en: '4-step distillation', zh: '4 步蒸馏' }, note: { en: 'about 30 steps to 4 per chunk', zh: '约 30 步减到每块 4 步' }, cut: { en: 'denoising steps', zh: '去噪步数' } },
+        { name: { en: 'RoLA sparse attention', zh: 'RoLA 稀疏注意力' }, note: { en: 'about 10% exact, from chunk 3', zh: '第 3 块起约 10% 精确计算' }, cut: { en: 'attention compute', zh: '注意力计算' } },
+        { name: { en: 'MXFP8 QAT', zh: 'MXFP8 量化感知训练' }, note: { en: '8-bit weights and activations', zh: '权重和激活 8 位' }, cut: { en: 'weights from 16 to 8 bits', zh: '权重从 16 位到 8 位' } },
+      ] as { name: L; note: L; cut: L | null }[],
+    },
   },
   training: {
     title: { en: 'Training pipeline', zh: '训练流程' },
@@ -305,6 +329,18 @@ export const t = {
     speedTitle: { en: 'Seconds per chunk', zh: '每块耗时' },
     oneGpu: { en: 'one RTX 5090', zh: '一张 RTX 5090' },
     fourGpu: { en: 'four RTX 5090s', zh: '四张 RTX 5090' },
+  },
+  results: {
+    title: { en: 'Speed-up', zh: '加速效果' },
+    body: {
+      en: 'End-to-end time for H3 and SparkWM to generate the same clip.',
+      zh: 'H3 和 SparkWM 生成同一段视频的端到端耗时。',
+    },
+    headline: { en: 'faster end to end', zh: '端到端加速' },
+    latencyTitle: { en: 'End-to-end time', zh: '端到端耗时' },
+    perChunkOne: { en: 'Seconds per chunk, one RTX 5090', zh: '每块耗时（一张 RTX 5090）' },
+    perChunkFour: { en: 'Seconds per chunk, four RTX 5090s', zh: '每块耗时（四张 RTX 5090）' },
+    setupPending: { en: 'Measurement setup to be added', zh: '测量条件待补' },
   },
   rollout: {
     title: { en: 'Long videos', zh: '长视频' },
