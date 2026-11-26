@@ -12,11 +12,13 @@ Writes into <out_dir>/<id>/:
   spec.png      log-mel spectrogram, 8-bit grayscale, 50 columns per second (colourised in the page)
 """
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 import cv2
+cv2.setNumThreads(1)
 import numpy as np
 from PIL import Image
 
@@ -55,7 +57,7 @@ def read_frames(path, step=1):
 
 
 def audio_pcm(path):
-    raw = subprocess.run([FFMPEG, "-v", "error", "-i", str(path), "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"],
+    raw = subprocess.run([FFMPEG, "-v", "error", "-threads", "1", "-i", str(path), "-f", "f32le", "-ac", "2", "-ar", str(SR), "-"],
                          check=True, capture_output=True).stdout
     return np.frombuffer(raw, dtype=np.float32).reshape(-1, 2).T.copy()
 
@@ -203,13 +205,21 @@ def main():
     src, vid, out_dir = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
     d = out_dir / vid
     d.mkdir(parents=True, exist_ok=True)
-    run(FFMPEG, "-y", "-i", str(src), "-c", "copy", "-movflags", "+faststart", str(d / "full.mp4"))
-    run(FFMPEG, "-y", "-i", str(src), "-vf", "scale=960:-2", "-c:v", "libx264", "-preset", "slow", "-crf", "26",
-        "-profile:v", "high", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", "aac", "-b:a", "96k",
+    # the team's masters run at 6-28 Mbit/s; re-encode for the web with a bitrate cap.
+    # GAIN_DB: peak-safe loudness gain (the masters sit at -27 to -47 LUFS). FF_THREADS keeps the machine quiet.
+    th = os.environ.get("FF_THREADS", "2")
+    gain = os.environ.get("GAIN_DB", "0")
+    af = ["-af", f"volume={gain}dB"]
+    run(FFMPEG, "-y", "-threads", th, "-i", str(src), "-c:v", "libx264", "-threads", th, "-preset", "slow", "-crf", "23",
+        "-maxrate", "4M", "-bufsize", "8M", "-profile:v", "high", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+        *af, "-c:a", "aac", "-b:a", "160k", str(d / "full.mp4"))
+    run(FFMPEG, "-y", "-threads", th, "-i", str(src), "-vf", "scale=960:-2", "-c:v", "libx264", "-threads", th,
+        "-preset", "slow", "-crf", "26", "-maxrate", "1.8M", "-bufsize", "3.6M",
+        "-profile:v", "high", "-pix_fmt", "yuv420p", "-movflags", "+faststart", *af, "-c:a", "aac", "-b:a", "96k",
         str(d / "sd.mp4"))
     # muted 640-wide loop for the demo wall
-    run(FFMPEG, "-y", "-i", str(src), "-an", "-vf", "scale=640:-2,fps=24", "-c:v", "libx264", "-preset", "slow",
-        "-crf", "30", "-profile:v", "high", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(d / "tile.mp4"))
+    run(FFMPEG, "-y", "-threads", th, "-i", str(src), "-an", "-vf", "scale=640:-2,fps=24", "-c:v", "libx264",
+        "-threads", th, "-preset", "slow", "-crf", "30", "-maxrate", "600k", "-bufsize", "1200k", "-profile:v", "high", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(d / "tile.mp4"))
     duration = probe_duration(src)
     frames_all = read_frames(src)
     first = cv2.cvtColor(frames_all[0], cv2.COLOR_BGR2RGB)

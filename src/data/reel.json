@@ -1,18 +1,42 @@
 {
-  "duration": 12.0,
+  "duration": 27.0,
   "crossfade": 0.5,
   "segments": [
     {
-      "id": "demo1",
+      "id": "sunken-city",
       "start": -0.25,
-      "end": 6.25,
+      "end": 4.25,
       "jump": 0.0
     },
     {
-      "id": "demo2",
-      "start": 6.25,
-      "end": 11.75,
-      "jump": 6.5
+      "id": "night-harbor",
+      "start": 4.25,
+      "end": 8.75,
+      "jump": 4.5
+    },
+    {
+      "id": "dance-studio",
+      "start": 8.75,
+      "end": 13.25,
+      "jump": 9.0
+    },
+    {
+      "id": "lantern-boat",
+      "start": 13.25,
+      "end": 17.75,
+      "jump": 13.5
+    },
+    {
+      "id": "space-greenhouse",
+      "start": 17.75,
+      "end": 22.25,
+      "jump": 18.0
+    },
+    {
+      "id": "coast-helicopter",
+      "start": 22.25,
+      "end": 26.75,
+      "jump": 22.5
     }
   ]
 }

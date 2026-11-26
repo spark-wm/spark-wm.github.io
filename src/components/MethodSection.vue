@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clips, t } from '../content'
+import { chunkFigureClip, t } from '../content'
 import { tr } from '../state'
 import AccelOverview from './AccelOverview.vue'
 import ChunkFigure from './ChunkFigure.vue'
@@ -24,7 +24,7 @@ import QuantFigure from './QuantFigure.vue'
           <p>{{ tr(t.method.chunkBody) }}</p>
         </div>
         <div class="figure">
-          <ChunkFigure :clip="clips[0]" />
+          <ChunkFigure :clip="chunkFigureClip" />
           <p class="caption">{{ tr(t.method.chunkCaption) }}</p>
         </div>
       </div>

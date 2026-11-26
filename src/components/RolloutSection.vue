@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clips, mediaPath, t } from '../content'
+import { mediaPath, rolloutClips, t } from '../content'
 import { tr } from '../state'
 </script>
 
@@ -11,7 +11,7 @@ import { tr } from '../state'
         <p class="lead text muted-lead">{{ tr(t.rollout.body) }}</p>
       </div>
       <div class="rows">
-        <figure v-for="c in clips" :key="c.id" class="row">
+        <figure v-for="c in rolloutClips" :key="c.id" class="row">
           <figcaption class="name">{{ tr(c.title) }}</figcaption>
           <ol class="frames">
             <li v-for="(s, i) in c.meta.revisit" :key="i">

@@ -24,14 +24,14 @@ Maintainer notes for the SparkWM team (in Chinese). 仓库首页的介绍见 [RE
 
 ## 加样片
 
-需要一段压缩好的 mp4（1344×768、24 fps、带 AAC 声音），以及 ffmpeg 和 `tools/requirements.txt` 里的 Python 包。
+需要一段 mp4（1344×768、24 fps、带 AAC 声音，原画质也行，脚本会重新压缩），以及 ffmpeg 和 `tools/requirements.txt` 里的 Python 包。脚本很吃 CPU，`FF_THREADS` 控制 ffmpeg 用几个线程（默认 2）；`GAIN_DB` 给声音加增益（默认 0），只在原片太轻时用，增益不要让峰值超过 -1.5 dBFS。
 
 ```bash
-python3 tools/prep_assets.py clip.mp4 demo3 public/media
-cp public/media/demo3/meta.json src/data/demo3.json
+python3 tools/prep_assets.py clip.mp4 my-clip public/media
+cp public/media/my-clip/meta.json src/data/clips/my-clip.json
 ```
 
-然后在 `content.ts` 的 `clips` 里加一行：照 `demo1` 的写法 import 这个 json，再写上标题和提示词。样片墙按 `clips` 的顺序排列。
+然后在 `content.ts` 的 `clips` 里加一行 `clip('my-clip', 'English title', '中文标题')`，`src/data/clips/` 里的 json 会自动读进来。样片墙按 `clips` 的顺序排列。方法一节的逐块示意图用哪段、长视频一节放哪几段，分别是 `chunkFigureClip` 和 `rolloutClips`。
 
 首屏轮播放哪几段、每段取哪几秒，写在 `src/data/reel.config.json` 里。改完跑一次 `python3 tools/build_reel.py`。
 
@@ -48,7 +48,7 @@ npm run dev
 
 - `sparkwm-reel.webp`：首屏轮播的无声动图。换了轮播片段后重新生成：
   ```bash
-  ffmpeg -i public/media/reel/reel-sd.mp4 -vf "fps=15,scale=800:-2:flags=lanczos" -c:v libwebp_anim -quality 55 -compression_level 6 -loop 0 -an .github/assets/sparkwm-reel.webp
+  ffmpeg -i public/media/reel/reel-sd.mp4 -vf "fps=10,scale=800:-2:flags=lanczos" -c:v libwebp_anim -quality 40 -compression_level 6 -loop 0 -an .github/assets/sparkwm-reel.webp
   ```
 - `sparkwm-pipeline-en.gif`、`sparkwm-pipeline-zh.gif`：训练流程动画，从网页上逐帧录下来的，改了 `PipelineFigure.vue` 要重录。
 - `sparkwm-logo-light.svg`、`sparkwm-logo-dark.svg`：从 `BrandMark.vue` 导出，按 GitHub 的深浅色主题切换。

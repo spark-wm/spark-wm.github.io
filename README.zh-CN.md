@@ -21,7 +21,7 @@
 
 <p align="center">
   <a href="https://spark-wm.github.io/#demos">
-    <img src=".github/assets/sparkwm-reel.webp" width="800" alt="SparkWM 生成的两段样片（铁路货场、浴场）轮流播放">
+    <img src=".github/assets/sparkwm-reel.webp" width="800" alt="SparkWM 生成的样片轮流播放">
   </a>
   <br>
   <sub>生成样片轮播（无声节选），每段都从给定的第一帧开始。带声音的完整样片见<a href="https://spark-wm.github.io/#demos">项目主页</a>。</sub>
@@ -33,7 +33,7 @@ SparkWM 是由 MiniMax H3 33B（330 亿参数）后训练而成的音视频世�
 
 每块是约 0.7 秒的视频，根据提示词、第一帧和相机轨迹生成。生成每一块时，从缓存只读取提示词、第一帧和前面最多 5 块，因此每块的计算量不随视频变长而增加。从第 3 块起改用稀疏注意力，进一步减少计算量；训练时还对模型做了 8 位精度（MXFP8）的伪量化，单张 RTX 5090 上就能生成 10 秒的音视频。
 
-铁路货场和浴场两段样片各约 29 块，由阶段 7（混合长度外推）之前的模型生成。当时模型在训练中每次只生成 10 块，所以样片长度接近训练时生成长度的三倍。
+项目主页上的每段样片都是从第一帧开始逐块生成的 20 秒，约 29 块。
 
 ## 从 H3 到 SparkWM
 

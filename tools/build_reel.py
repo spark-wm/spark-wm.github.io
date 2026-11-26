@@ -15,6 +15,7 @@ Each segment's caption window runs from the middle of the fade into it to the mi
 the first segment's window wraps around the loop point (its start is negative).
 """
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -23,6 +24,7 @@ SITE = ROOT
 MEDIA = SITE / "public" / "media"
 FPS = 24
 SR = 32000
+TH = os.environ.get("FF_THREADS", "2")  # encoding threads; keep low on a shared machine
 
 
 def run(args):
@@ -57,7 +59,7 @@ def main():
         pieces += [(s["id"], s["from"], s["to"] - s["from"]) for s in segs[1:]]
         pieces.append((first["id"], first["from"], d))
 
-    args = ["ffmpeg", "-y"]
+    args = ["ffmpeg", "-y", "-threads", TH]
     for cid, start, length in pieces:
         args += ["-ss", f"{start:.6f}", "-t", f"{length + 1:.6f}", "-i", str(MEDIA / cid / "full.mp4")]
     graph = []
@@ -86,9 +88,11 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     master = out / "reel.mp4"
     run(args + ["-filter_complex", ";".join(graph), "-map", vout, "-map", aout,
-                "-c:v", "libx264", "-preset", "slow", "-crf", "21", "-profile:v", "high", "-pix_fmt", "yuv420p",
+                "-c:v", "libx264", "-threads", TH, "-preset", "slow", "-crf", "21", "-maxrate", "5M", "-bufsize", "10M",
+                "-profile:v", "high", "-pix_fmt", "yuv420p",
                 "-g", str(FPS * 2), "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(master)])
-    run(["ffmpeg", "-y", "-i", str(master), "-vf", "scale=960:-2", "-c:v", "libx264", "-preset", "slow", "-crf", "25",
+    run(["ffmpeg", "-y", "-threads", TH, "-i", str(master), "-vf", "scale=960:-2", "-c:v", "libx264", "-threads", TH,
+         "-preset", "slow", "-crf", "25", "-maxrate", "2M", "-bufsize", "4M",
          "-profile:v", "high", "-pix_fmt", "yuv420p", "-g", str(FPS * 2), "-c:a", "aac", "-b:a", "96k",
          "-movflags", "+faststart", str(out / "reel-sd.mp4")])
     run(["ffmpeg", "-y", "-i", str(master), "-frames:v", "1", "-c:v", "libwebp", "-quality", "82", str(out / "poster.webp")])
