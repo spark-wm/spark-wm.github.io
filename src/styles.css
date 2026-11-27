@@ -15,13 +15,6 @@
   font-style: italic;
   font-display: swap;
 }
-@font-face {
-  font-family: 'Noto Sans SC';
-  src: url('./assets/fonts/noto-sc.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
 
 :root {
   --bg: #f3f0ea;
@@ -49,8 +42,8 @@
   --wrap: 1200px;
   --text: 680px;
   --gutter: 24px;
-  --sans: 'Archivo', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-  --serif-it: 'Newsreader', 'Noto Sans SC', Georgia, serif;
+  --sans: 'Archivo', system-ui, sans-serif;
+  --serif-it: 'Newsreader', Georgia, serif;
   color-scheme: light;
 }
 
@@ -148,10 +141,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
-:lang(zh-CN) body,
-html:lang(zh-CN) {
-  line-height: 1.75;
-}
 img,
 video,
 canvas,
@@ -198,12 +187,6 @@ h3 {
   font-stretch: 112%;
   letter-spacing: -0.02em;
   line-height: 1.08;
-}
-html:lang(zh-CN) h1,
-html:lang(zh-CN) h2,
-html:lang(zh-CN) h3 {
-  letter-spacing: 0;
-  line-height: 1.25;
 }
 h2 {
   font-size: clamp(34px, 4.8vw, 60px);

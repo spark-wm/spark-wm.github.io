@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { DRAFT, clips, mediaPath, t, wallSlots } from '../content'
-import { demoPick, tr, ui } from '../state'
+import { demoPick, ui } from '../state'
 import reelMeta from '../data/reel.json'
 import StreamPlayer from './StreamPlayer.vue'
 
@@ -56,8 +56,8 @@ onBeforeUnmount(() => io?.disconnect())
   <section id="demos" class="block">
     <div class="wrap">
       <div class="block-head">
-        <h2>{{ tr(t.demos.title) }}</h2>
-        <p class="lead text muted-lead">{{ tr(t.demos.body) }}</p>
+        <h2>{{ t.demos.title }}</h2>
+        <p class="lead text muted-lead">{{ t.demos.body }}</p>
       </div>
 
       <ul class="wall">
@@ -79,21 +79,21 @@ onBeforeUnmount(() => io?.disconnect())
               </video>
             </span>
             <span class="cap">
-              <span class="name">{{ tr(c.title) }}</span>
-              <span class="len num">{{ Math.round(c.meta.duration) }} {{ tr(t.demos.seconds) }}</span>
+              <span class="name">{{ c.title }}</span>
+              <span class="len num">{{ Math.round(c.meta.duration) }} {{ t.demos.seconds }}</span>
             </span>
           </button>
         </li>
         <li v-for="k in empty" :key="'slot' + k" class="slot">
-          <span class="frame ph"><span class="pending">{{ tr(t.pending) }}</span></span>
-          <span class="cap"><span class="name">{{ tr(t.demos.more) }}</span></span>
+          <span class="frame ph"><span class="pending">{{ t.pending }}</span></span>
+          <span class="cap"><span class="name">{{ t.demos.more }}</span></span>
         </li>
       </ul>
 
       <div ref="theater" class="theater">
         <p class="now">
-          <span class="name">{{ tr(clip.title) }}</span>
-          <span class="len num">{{ Math.round(clip.meta.duration) }} {{ tr(t.demos.seconds) }}</span>
+          <span class="name">{{ clip.title }}</span>
+          <span class="len num">{{ Math.round(clip.meta.duration) }} {{ t.demos.seconds }}</span>
         </p>
         <StreamPlayer :clip="clip" player-id="theater" />
       </div>

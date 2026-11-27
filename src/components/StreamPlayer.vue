@@ -3,7 +3,7 @@
 // sound chunks that end `audioLead` seconds before their video chunk, and a playhead.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { DRAFT, mediaPath, t, type Clip } from '../content'
-import { isDark, reportVisibility, tr, ui } from '../state'
+import { isDark, reportVisibility, ui } from '../state'
 import UiIcon from './UiIcon.vue'
 import { useInView } from '../composables/useInView'
 
@@ -40,7 +40,7 @@ const ticks = computed(() => { const out: number[] = []; for (let s = 0; s <= du
 
 const readout = computed(() => {
   const k = cur.value + 1
-  return ui.lang === 'zh' ? `第 ${k} 块，共 ${N.value} 块` : `Chunk ${k} of ${N.value}`
+  return `Chunk ${k} of ${N.value}`
 })
 
 /** Sound chunk k covers [aEnd(k-1), aEnd(k)]; it ends audioLead before video chunk k ends. */
@@ -288,7 +288,7 @@ watch(() => [ui.theme, isDark()], drawSpec)
       />
       <button v-if="muted" class="unmute" @click.stop="toggleSound">
         <UiIcon name="sound-on" :size="18" />
-        <span>{{ tr(t.player.turnOn) }}</span>
+        <span>{{ t.player.turnOn }}</span>
       </button>
     </div>
 
@@ -299,10 +299,10 @@ watch(() => [ui.theme, isDark()], drawSpec)
           <span class="num clock">{{ time.toFixed(1) }} s</span>
         </div>
         <div class="ctrls">
-          <button class="ctrl" :aria-label="playing ? tr(t.player.pause) : tr(t.player.play)" @click="togglePlay">
+          <button class="ctrl" :aria-label="playing ? t.player.pause : t.player.play" @click="togglePlay">
             <UiIcon :name="playing ? 'pause' : 'play'" :size="18" />
           </button>
-          <button class="ctrl" :class="{ on: !muted }" :aria-label="muted ? tr(t.player.turnOn) : tr(t.player.turnOff)" @click="toggleSound">
+          <button class="ctrl" :class="{ on: !muted }" :aria-label="muted ? t.player.turnOn : t.player.turnOff" @click="toggleSound">
             <UiIcon :name="muted ? 'sound-off' : 'sound-on'" :size="18" />
           </button>
         </div>
@@ -311,8 +311,8 @@ watch(() => [ui.theme, isDark()], drawSpec)
       <div class="lanes" :style="{ '--cell-h': cellH + 'px' }">
         <div class="labels" aria-hidden="true">
           <span class="lab lab-mem" />
-          <span class="lab lab-video">{{ tr(t.player.video) }}</span>
-          <span class="lab lab-sound">{{ tr(t.player.sound) }}</span>
+          <span class="lab lab-video">{{ t.player.video }}</span>
+          <span class="lab lab-sound">{{ t.player.sound }}</span>
           <span class="lab lab-axis" />
         </div>
         <div
@@ -320,7 +320,7 @@ watch(() => [ui.theme, isDark()], drawSpec)
           class="track"
           tabindex="0"
           role="slider"
-          :aria-label="tr(t.player.seek)"
+          :aria-label="t.player.seek"
           :aria-valuemin="0"
           :aria-valuemax="Math.round(dur)"
           :aria-valuenow="Math.round(time)"
@@ -333,7 +333,7 @@ watch(() => [ui.theme, isDark()], drawSpec)
         >
           <div class="mem-row">
             <div v-if="cur > 0" class="mem" :style="{ left: (100 * memStart) / N + '%', width: (100 * (cur - memStart)) / N + '%' }">
-              <span class="mem-label">{{ tr(t.player.memory) }}</span>
+              <span class="mem-label">{{ t.player.memory }}</span>
             </div>
           </div>
           <div class="cells">
@@ -355,8 +355,8 @@ watch(() => [ui.theme, isDark()], drawSpec)
         </div>
       </div>
 
-      <p v-if="clip.prompt" class="prompt">{{ tr(clip.prompt) }}</p>
-      <p v-else-if="DRAFT" class="prompt"><span class="pending">{{ tr(t.player.promptPending) }}</span></p>
+      <p v-if="clip.prompt" class="prompt">{{ clip.prompt }}</p>
+      <p v-else-if="DRAFT" class="prompt"><span class="pending">{{ t.player.promptPending }}</span></p>
     </div>
   </figure>
 </template>
@@ -565,10 +565,6 @@ watch(() => [ui.theme, isDark()], drawSpec)
   line-height: 1.45;
   color: var(--stage-ink);
   max-width: 900px;
-}
-html:lang(zh-CN) .prompt {
-  font-style: normal;
-  font-size: 16px;
 }
 .prompt .pending {
   font-family: var(--sans);

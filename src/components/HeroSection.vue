@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { DRAFT, affiliations, authorMarks, authorNotes, authors, links, t } from '../content'
-import { tr } from '../state'
 import HeroReel from './HeroReel.vue'
 import FactsRow from './FactsRow.vue'
 import UiIcon from './UiIcon.vue'
@@ -10,9 +9,9 @@ import alibaba from '../assets/logos/alibaba.svg'
 
 const logos: Record<number, string> = { 1: pku, 2: alibaba }
 const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; label: string; url: string; primary: boolean }[]>(() => [
-  { key: 'paper', icon: 'paper' as const, label: tr(t.hero.paper), url: links.paper, primary: true },
-  { key: 'code', icon: 'code' as const, label: tr(t.hero.code), url: links.code, primary: false },
-  { key: 'weights', icon: 'weights' as const, label: tr(t.hero.weights), url: links.weights, primary: false },
+  { key: 'paper', icon: 'paper' as const, label: t.hero.paper, url: links.paper, primary: true },
+  { key: 'code', icon: 'code' as const, label: t.hero.code, url: links.code, primary: false },
+  { key: 'weights', icon: 'weights' as const, label: t.hero.weights, url: links.weights, primary: false },
 // weights: no release decided yet, so no placeholder either
 ].filter((b) => b.url || (DRAFT && b.key !== 'weights')))
 </script>
@@ -22,7 +21,7 @@ const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; labe
     <div class="wrap">
       <div class="head">
         <h1 class="title">Spark<span class="wm">WM</span></h1>
-        <p class="lead">{{ tr(t.hero.lead) }}</p>
+        <p class="lead">{{ t.hero.lead }}</p>
         <div class="meta">
           <div class="who">
             <p v-if="authors.length" class="authors">
@@ -30,27 +29,27 @@ const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; labe
                 <a v-if="a.url" :href="a.url">{{ a.name }}</a><template v-else>{{ a.name }}</template><sup>{{ authorMarks(a) }}</sup><template v-if="i < authors.length - 1">, </template>
               </span>
             </p>
-            <p v-else-if="DRAFT" class="authors"><span class="pending">{{ tr(t.credits.authorsPending) }}</span></p>
+            <p v-else-if="DRAFT" class="authors"><span class="pending">{{ t.credits.authorsPending }}</span></p>
             <ul class="affs">
               <li v-for="a in affiliations" :key="a.id">
                 <sup v-if="authors.length" class="num aff-n">{{ a.id }}</sup>
-                <img :src="logos[a.id]" :alt="tr(a.name)" :class="'logo logo-' + a.id" />
-                <span v-if="a.id !== 2">{{ tr(a.name) }}</span>
+                <img :src="logos[a.id]" :alt="a.name" :class="'logo logo-' + a.id" />
+                <span v-if="a.id !== 2">{{ a.name }}</span>
               </li>
             </ul>
-            <p v-if="authors.length" class="notes"><span v-for="(n, i) in authorNotes" :key="i">{{ tr(n) }}</span></p>
+            <p v-if="authors.length" class="notes"><span v-for="(n, i) in authorNotes" :key="i">{{ n }}</span></p>
           </div>
           <div class="buttons">
             <template v-for="b in buttons" :key="b.key">
               <a v-if="b.url" class="btn pill" :class="{ primary: b.primary }" :href="b.url" target="_blank" rel="noopener"><UiIcon :name="b.icon" :size="16" />{{ b.label }}</a>
-              <span v-else class="btn pill" aria-disabled="true"><UiIcon :name="b.icon" :size="16" />{{ b.label }}<span class="soon">{{ tr(t.hero.soon) }}</span></span>
+              <span v-else class="btn pill" aria-disabled="true"><UiIcon :name="b.icon" :size="16" />{{ b.label }}<span class="soon">{{ t.hero.soon }}</span></span>
             </template>
           </div>
         </div>
       </div>
 
       <HeroReel />
-      <p class="base">{{ tr(t.hero.base) }}</p>
+      <p class="base">{{ t.hero.base }}</p>
       <FactsRow />
     </div>
   </section>
@@ -82,10 +81,6 @@ const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; labe
   line-height: 1.42;
   font-weight: 500;
   letter-spacing: -0.005em;
-}
-html:lang(zh-CN) .lead {
-  line-height: 1.62;
-  letter-spacing: 0;
 }
 .meta {
   display: flex;

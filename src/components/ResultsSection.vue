@@ -5,7 +5,7 @@
 // build shows one pending marker and equal-width placeholder bars (so no ratio is implied).
 import { computed, ref } from 'vue'
 import { DRAFT, efficiency, t } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { useInView } from '../composables/useInView'
 
 const R = t.results
@@ -21,7 +21,7 @@ const multi = efficiency.multi
 // the stated factor wins; otherwise it follows from the latency rows
 const speedup = multi.speedup ?? (known && base.seconds && ours.seconds ? base.seconds / ours.seconds : null)
 const single = efficiency.singleGpuSeconds
-const headLabel = computed(() => (multi.gpus ? tr(R.headlineN).replace('{n}', String(multi.gpus)) : tr(R.headline)))
+const headLabel = computed(() => (multi.gpus ? R.headlineN.replace('{n}', String(multi.gpus)) : R.headline))
 const anyData = speedup !== null || known
 const show = true
 
@@ -36,17 +36,17 @@ const ticks = computed(() => {
 })
 const width = (r: (typeof rows)[number]) => (known && r.seconds !== null ? pos(r.seconds) : 100)
 const fmtS = (v: number) => (v >= 100 ? Math.round(v).toLocaleString() : v >= 10 ? v.toFixed(1) : v.toFixed(2))
-const markerText = computed(() => (speedup === null ? '' : ui.lang === 'zh' ? `${Math.round(speedup)} 倍加速` : `${Math.round(speedup)}× faster`))
+const markerText = computed(() => (speedup === null ? '' : `${Math.round(speedup)}× faster`))
 </script>
 
 <template>
   <section v-if="show" id="results" ref="root" class="block">
     <div class="wrap">
       <div class="block-head">
-        <h2>{{ tr(R.title) }}</h2>
+        <h2>{{ R.title }}</h2>
         <div class="head-copy">
-          <p class="lead text muted-lead">{{ tr(R.body) }}</p>
-          <p v-if="!anyData && DRAFT"><span class="pending">{{ tr(R.measuring) }}</span></p>
+          <p class="lead text muted-lead">{{ R.body }}</p>
+          <p v-if="!anyData && DRAFT"><span class="pending">{{ R.measuring }}</span></p>
         </div>
       </div>
 
@@ -54,20 +54,20 @@ const markerText = computed(() => (speedup === null ? '' : ui.lang === 'zh' ? `$
         <div v-if="speedup !== null || DRAFT" class="stat headline">
           <p class="stat-value num">
             <template v-if="speedup !== null">{{ speedup >= 10 ? Math.round(speedup) : speedup.toFixed(1) }}<span class="x">×</span></template>
-            <span v-else class="dash" role="img" :aria-label="tr(t.pending)" />
+            <span v-else class="dash" role="img" :aria-label="t.pending" />
           </p>
           <p class="stat-label">{{ headLabel }}</p>
         </div>
         <div class="stat">
           <p class="stat-value num">{{ single }}<span class="u">s</span></p>
-          <p class="stat-label">{{ tr(R.single) }}</p>
+          <p class="stat-label">{{ R.single }}</p>
         </div>
       </div>
 
       <figure v-if="known || DRAFT" class="chart" :class="{ skeleton: !known, grow }">
         <figcaption class="chart-head">
-          <span class="chart-title">{{ tr(R.latencyTitle) }}</span>
-          <span v-if="efficiency.latency.setup" class="chart-setup">{{ tr(efficiency.latency.setup) }}</span>
+          <span class="chart-title">{{ R.latencyTitle }}</span>
+          <span v-if="efficiency.latency.setup" class="chart-setup">{{ efficiency.latency.setup }}</span>
         </figcaption>
         <div class="plot">
           <div v-if="known" class="axis" aria-hidden="true">
@@ -75,14 +75,14 @@ const markerText = computed(() => (speedup === null ? '' : ui.lang === 'zh' ? `$
           </div>
           <div v-for="(r, i) in rows" :key="i" class="row" :class="{ ours: r.ours }">
             <div class="who">
-              <p class="who-name">{{ tr(r.name) }}</p>
-              <p class="who-note">{{ tr(r.note) }}</p>
+              <p class="who-name">{{ r.name }}</p>
+              <p class="who-note">{{ r.note }}</p>
             </div>
             <div class="track">
               <span class="bar" :style="{ width: grow ? width(r) + '%' : '0%', transitionDelay: i * 0.2 + 's' }" />
               <span class="val num">
                 <template v-if="r.seconds !== null">{{ fmtS(r.seconds) }} s</template>
-                <span v-else class="dash small" role="img" :aria-label="tr(t.pending)" />
+                <span v-else class="dash small" role="img" :aria-label="t.pending" />
               </span>
             </div>
           </div>

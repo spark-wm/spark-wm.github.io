@@ -1,13 +1,4 @@
 import { reactive, watch } from 'vue'
-import type { L, Lang } from './content'
-
-function initialLang(): Lang {
-  try {
-    const s = localStorage.getItem('sparkwm-lang')
-    if (s === 'en' || s === 'zh') return s
-  } catch { /* storage blocked */ }
-  return (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en'
-}
 
 function initialTheme(): 'auto' | 'light' | 'dark' {
   try {
@@ -19,7 +10,6 @@ function initialTheme(): 'auto' | 'light' | 'dark' {
 }
 
 export const ui = reactive({
-  lang: initialLang(),
   theme: initialTheme(),
   /** The visitor wants sound. Only the audible player actually plays it. */
   sound: false,
@@ -28,15 +18,8 @@ export const ui = reactive({
   reducedMotion: typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches,
 })
 
-export const tr = (x: L) => x[ui.lang]
-
 /** A request from the hero reel to open a clip in the demo theater; `n` counts requests so a repeat still fires. */
 export const demoPick = reactive({ id: '', n: 0 })
-
-watch(() => ui.lang, (l) => {
-  document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en'
-  try { localStorage.setItem('sparkwm-lang', l) } catch { /* ignore */ }
-}, { immediate: true })
 
 watch(() => ui.theme, (th) => {
   if (th === 'auto') delete document.documentElement.dataset.theme

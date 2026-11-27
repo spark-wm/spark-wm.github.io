@@ -26,8 +26,6 @@
       try {
         var s = localStorage.getItem('sparkwm-theme');
         document.documentElement.dataset.theme = s === 'light' ? 'light' : 'dark';
-        var l = localStorage.getItem('sparkwm-lang') || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
-        document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
       } catch (e) {}
     </script>
   </head>

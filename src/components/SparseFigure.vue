@@ -4,7 +4,7 @@
 // pooled q·k score. Everything is also covered by the low-rank branch.
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { t } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { useInView } from '../composables/useInView'
 
 const T = 10 // tiles per chunk in the schematic
@@ -90,18 +90,18 @@ onBeforeUnmount(() => clearInterval(timer))
   <figure ref="root" class="fig stage-fig">
     <div class="top">
       <div class="seg" role="radiogroup">
-        <button role="radio" :aria-checked="mode === 'full'" :class="{ on: mode === 'full' }" @click="mode = 'full'">{{ tr(t.method.full) }}</button>
-        <button role="radio" :aria-checked="mode === 'sparse'" :class="{ on: mode === 'sparse' }" @click="mode = 'sparse'">{{ tr(t.method.sparse) }}</button>
+        <button role="radio" :aria-checked="mode === 'full'" :class="{ on: mode === 'full' }" @click="mode = 'full'">{{ t.method.full }}</button>
+        <button role="radio" :aria-checked="mode === 'sparse'" :class="{ on: mode === 'sparse' }" @click="mode = 'sparse'">{{ t.method.sparse }}</button>
       </div>
-      <p class="share"><span class="num big">{{ exactShare }}%</span><span class="muted">{{ tr(t.method.exact) }}</span></p>
+      <p class="share"><span class="num big">{{ exactShare }}%</span><span class="muted">{{ t.method.exact }}</span></p>
     </div>
 
     <div class="labels" aria-hidden="true">
-      <span :style="{ left: pctX(colX(0)) }">{{ ui.lang === 'zh' ? '提示词和第一帧' : 'Prompt, frame 1' }}</span>
-      <span class="mid" :style="{ left: pctX((groupSpan(0).x + groupSpan(CH - 2).x + groupSpan(0).w) / 2) }">{{ tr(t.player.memory) }}</span>
-      <span :style="{ right: pctRight(groupSpan(CH - 1).x + groupSpan(CH - 1).w) }">{{ tr(t.method.current) }}</span>
+      <span :style="{ left: pctX(colX(0)) }">{{ t.method.promptFrame }}</span>
+      <span class="mid" :style="{ left: pctX((groupSpan(0).x + groupSpan(CH - 2).x + groupSpan(0).w) / 2) }">{{ t.player.memory }}</span>
+      <span :style="{ right: pctRight(groupSpan(CH - 1).x + groupSpan(CH - 1).w) }">{{ t.method.current }}</span>
     </div>
-    <svg :viewBox="`-4 16 ${width + 8} ${height - 12}`" class="grid" role="img" :aria-label="`${exactShare}% ${tr(t.method.exact)}`" @mouseleave="hover = -1">
+    <svg :viewBox="`-4 16 ${width + 8} ${height - 12}`" class="grid" role="img" :aria-label="`${exactShare}% ${t.method.exact}`" @mouseleave="hover = -1">
       <g class="heads">
         <rect :x="groupSpan(0).x" y="20" :width="groupSpan(CH - 2).x + groupSpan(0).w - groupSpan(0).x" height="1.5" class="rule" />
         <rect :x="groupSpan(CH - 1).x" y="20" :width="groupSpan(CH - 1).w" height="1.5" class="rule accent" />
@@ -121,9 +121,9 @@ onBeforeUnmount(() => clearInterval(timer))
     </svg>
 
     <ul class="legend">
-      <li><i class="sw cond" />{{ tr(t.method.always) }}</li>
-      <li><i class="sw exact" />{{ tr(t.method.exact) }}</li>
-      <li><i class="sw low" />{{ tr(t.method.lowrank) }}</li>
+      <li><i class="sw cond" />{{ t.method.always }}</li>
+      <li><i class="sw exact" />{{ t.method.exact }}</li>
+      <li><i class="sw low" />{{ t.method.lowrank }}</li>
     </ul>
   </figure>
 </template>

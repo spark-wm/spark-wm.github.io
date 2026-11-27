@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { t } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { useInView } from '../composables/useInView'
 import PipelineFigure from './PipelineFigure.vue'
 import UiIcon from './UiIcon.vue'
@@ -32,16 +32,16 @@ function pick(i: number) {
   active.value = i
   steps.value[i]?.scrollIntoView({ behavior: ui.reducedMotion ? 'auto' : 'smooth', block: wide.value ? 'center' : 'end' })
 }
-const heading = (i: number) => (ui.lang === 'zh' ? `${tr(t.training.stageWord)} ${i + 1}：` : `${tr(t.training.stageWord)} ${i + 1}: `)
-const current = computed(() => heading(active.value) + tr(t.training.stages[active.value].name))
+const heading = (i: number) => `${t.training.stageWord} ${i + 1}: `
+const current = computed(() => heading(active.value) + t.training.stages[active.value].name)
 </script>
 
 <template>
   <section id="training" class="block">
     <div class="wrap">
       <div class="block-head">
-        <h2>{{ tr(t.training.title) }}</h2>
-        <p class="lead text muted-lead">{{ tr(t.training.body) }}</p>
+        <h2>{{ t.training.title }}</h2>
+        <p class="lead text muted-lead">{{ t.training.body }}</p>
       </div>
 
       <div class="layout">
@@ -50,32 +50,32 @@ const current = computed(() => heading(active.value) + tr(t.training.stages[acti
             <PipelineFigure :stage="active" :playing="playing" @cycle="onCycle" />
             <figcaption class="cap">
               <span class="cap-name">{{ current }}</span>
-              <button class="pp" :aria-label="paused ? tr(t.training.fig.play) : tr(t.training.fig.pause)" @click="paused = !paused">
+              <button class="pp" :aria-label="paused ? t.training.fig.play : t.training.fig.pause" @click="paused = !paused">
                 <UiIcon :name="paused ? 'play' : 'pause'" :size="16" />
               </button>
             </figcaption>
           </figure>
-          <ol class="rail" :aria-label="tr(t.training.title)">
+          <ol class="rail" :aria-label="t.training.title">
             <li v-for="i in N" :key="i">
-              <button :class="{ on: i - 1 === active, done: i - 1 < active }" :aria-label="heading(i - 1) + tr(t.training.stages[i - 1].name)" @click="pick(i - 1)"><span class="bar" /></button>
+              <button :class="{ on: i - 1 === active, done: i - 1 < active }" :aria-label="heading(i - 1) + t.training.stages[i - 1].name" @click="pick(i - 1)"><span class="bar" /></button>
             </li>
           </ol>
         </div>
 
         <ol class="steps">
           <li v-for="(st, i) in t.training.stages" :key="i" ref="steps" :data-i="i" class="step" :class="{ on: i === active }" @click="active = i">
-            <h3><span class="k">{{ heading(i) }}</span>{{ tr(st.name) }}</h3>
-            <p>{{ tr(st.body) }}</p>
+            <h3><span class="k">{{ heading(i) }}</span>{{ st.name }}</h3>
+            <p>{{ st.body }}</p>
           </li>
         </ol>
       </div>
 
       <details class="hyper" @toggle="hyperOpen = ($event.target as HTMLDetailsElement).open">
-        <summary>{{ tr(t.training.hyperTitle) }}<UiIcon name="chevron" :size="18" class="chev" /></summary>
+        <summary>{{ t.training.hyperTitle }}<UiIcon name="chevron" :size="18" class="chev" /></summary>
         <dl v-if="hyperOpen">
           <div v-for="(r, i) in t.training.hyper" :key="i" class="hrow">
-            <dt>{{ tr(r.k) }}</dt>
-            <dd class="num">{{ tr(r.v) }}</dd>
+            <dt>{{ r.k }}</dt>
+            <dd class="num">{{ r.v }}</dd>
           </div>
         </dl>
       </details>

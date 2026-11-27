@@ -8,7 +8,7 @@ Maintainer notes for the SparkWM team (in Chinese). 仓库首页的介绍见 [RE
 
 ## 改文字和数字
 
-页面上的文字（中英两版）、数字、链接和样片都写在 `src/content.ts` 里，组件只负责排版。
+页面只有英文版。页面上的文字、数字、链接和样片都写在 `src/content.ts` 里，组件只负责排版。
 
 | 要改什么 | 在哪里 |
 |---|---|
@@ -16,11 +16,12 @@ Maintainer notes for the SparkWM team (in Chinese). 仓库首页的介绍见 [RE
 | RTX 5090 每块耗时 | `efficiency.speed`（一张卡、四张卡），以及 `facts` 的第一项 |
 | 和 H3 的端到端耗时对比 | `efficiency.latency`：`setup` 写测试条件，`rows` 里填两行的秒数 |
 | 样片的提示词 | `clips[].prompt` |
+| 引用 | `bibtex` 是 SparkWM 自己的条目，论文上 arXiv 后换成 arXiv 导出的 BibTeX；`relatedBibtex` 是 SparkDiffusion 和 RoLA 两条，照 SparkDiffusion 仓库 README 里的写法 |
 | 正式发布 | 把 `DRAFT` 改成 `false`，并删掉 `index.html` 里 `robots noindex` 那一行 |
 
 `DRAFT = true` 时，页面顶上有一条预览横幅，还没测的数在“加速效果”一节标一次“待补”；改成 `false` 后，空着的地方直接隐藏，“加速效果”一节在一个数都没有时整节不显示。
 
-中文字体只保留页面上用到的字。CI 每次构建都会按 `src/` 里的文字重新裁剪；本地预览时如果加了新字，先跑一次 `python3 tools/build_fonts.py`。
+页面用两套拉丁字体（Archivo、Newsreader 斜体），已经按固定的字符范围裁剪好，放在 `src/assets/fonts/`。换字体文件，或者页面上用到了范围之外的符号时，改 `tools/build_fonts.py` 里的范围再跑一次，把生成的 woff2 一起提交。
 
 ## 加样片
 
@@ -31,7 +32,7 @@ python3 tools/prep_assets.py clip.mp4 my-clip public/media
 cp public/media/my-clip/meta.json src/data/clips/my-clip.json
 ```
 
-然后在 `content.ts` 的 `clips` 里加一行 `clip('my-clip', 'English title', '中文标题')`，`src/data/clips/` 里的 json 会自动读进来。样片墙按 `clips` 的顺序排列。方法一节的逐块示意图用哪段、长视频一节放哪几段，分别是 `chunkFigureClip` 和 `rolloutClips`。
+然后在 `content.ts` 的 `clips` 里加一行 `clip('my-clip', 'English title')`，`src/data/clips/` 里的 json 会自动读进来。样片墙按 `clips` 的顺序排列。方法一节的逐块示意图用哪段、长视频一节放哪几段，分别是 `chunkFigureClip` 和 `rolloutClips`。
 
 首屏轮播放哪几段、每段取哪几秒，写在 `src/data/reel.config.json` 里。改完跑一次 `python3 tools/build_reel.py`。
 
@@ -50,6 +51,7 @@ npm run dev
   ```bash
   ffmpeg -i public/media/reel/reel-sd.mp4 -vf "fps=10,scale=800:-2:flags=lanczos" -c:v libwebp_anim -quality 40 -compression_level 6 -loop 0 -an .github/assets/sparkwm-reel.webp
   ```
-- `sparkwm-pipeline-en.gif`、`sparkwm-pipeline-zh.gif`：训练流程动画，从网页上逐帧录下来的，改了 `PipelineFigure.vue` 要重录。
+- `sparkwm-pipeline-en.gif`：训练流程动画，从网页（`index.html?record=pipeline`）上逐帧录下来的，改了 `PipelineFigure.vue` 或 `content.ts` 里 `training.fig` 的标签要重录。
+- `sparkwm-pipeline-zh.gif`：中文 README 用的同一段动画，是网页还有中文版时录的，现在不能重录；动画改了以后，让 `README.zh-CN.md` 也用英文那张，并删掉这个文件。
 - `sparkwm-logo-light.svg`、`sparkwm-logo-dark.svg`：从 `BrandMark.vue` 导出，按 GitHub 的深浅色主题切换。
 - `social-preview.jpg`（1280×640）：仓库的社交预览图，在 Settings → General → Social preview 里上传。它和 `public/og.jpg`（1200×630，网页的分享卡片）是同一个版式，用的是模型生成的画面。

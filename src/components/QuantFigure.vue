@@ -5,7 +5,7 @@
 // [2^e, 2^(e+1)), and the largest magnitude is 448 / 256 = 1.75.
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { t } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { useInView } from '../composables/useInView'
 
 const N = 32
@@ -95,11 +95,11 @@ const bits = computed(() => (mode.value === 'mx' ? 8 : 16))
         <button role="radio" :aria-checked="mode === 'bf16'" :class="{ on: mode === 'bf16' }" @click="choose('bf16')">BF16</button>
         <button role="radio" :aria-checked="mode === 'mx'" :class="{ on: mode === 'mx' }" @click="choose('mx')">MXFP8</button>
       </div>
-      <p class="share"><span class="num big">{{ bits }}</span><span class="muted">{{ tr(t.method.qBits) }}</span></p>
+      <p class="share"><span class="num big">{{ bits }}</span><span class="muted">{{ t.method.qBits }}</span></p>
     </div>
 
-    <p class="head">{{ tr(t.method.qGroup) }}</p>
-    <svg :viewBox="`0 0 ${right + X0} ${2 * Y0}`" class="plot" role="img" :aria-label="`${tr(t.method.qGroup)}, ${bits} ${tr(t.method.qBits)}`">
+    <p class="head">{{ t.method.qGroup }}</p>
+    <svg :viewBox="`0 0 ${right + X0} ${2 * Y0}`" class="plot" role="img" :aria-label="`${t.method.qGroup}, ${bits} ${t.method.qBits}`">
       <rect :x="X0" y="0" :width="right - X0" height="1.5" class="rule" />
       <line v-for="(l, i) in levels" :key="'l' + i" :x1="X0" :x2="right" :y1="Y0 - H * l" :y2="Y0 - H * l" class="level" :style="{ opacity: 0.08 + 0.32 * k }" />
       <line :x1="X0" :x2="right" :y1="Y0" :y2="Y0" class="axis" />
@@ -110,9 +110,9 @@ const bits = computed(() => (mode.value === 'mx' ? 8 : 16))
     </svg>
 
     <ul class="legend">
-      <li><i class="sw orig" />{{ tr(t.method.qOrig) }}</li>
-      <li><i class="sw q" />{{ tr(t.method.qSnap) }}</li>
-      <li><i class="sw level" />{{ tr(t.method.qGrid) }}</li>
+      <li><i class="sw orig" />{{ t.method.qOrig }}</li>
+      <li><i class="sw q" />{{ t.method.qSnap }}</li>
+      <li><i class="sw level" />{{ t.method.qGrid }}</li>
     </ul>
   </figure>
 </template>

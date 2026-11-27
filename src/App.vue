@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { DRAFT, t } from './content'
-import { tr } from './state'
 import TopNav from './components/TopNav.vue'
 import HeroSection from './components/HeroSection.vue'
 import DemoSection from './components/DemoSection.vue'
@@ -11,12 +10,12 @@ import TrainingSection from './components/TrainingSection.vue'
 import RolloutSection from './components/RolloutSection.vue'
 import CreditsSection from './components/CreditsSection.vue'
 
-const banner = computed(() => tr(t.draftBanner))
-watchEffect(() => { document.title = tr(t.pageTitle) })
+const banner = computed(() => t.draftBanner)
+watchEffect(() => { document.title = t.pageTitle })
 </script>
 
 <template>
-  <a class="skip" href="#main">{{ tr(t.nav.skip) }}</a>
+  <a class="skip" href="#main">{{ t.nav.skip }}</a>
   <div v-if="DRAFT" class="draft-banner" role="note">{{ banner }}</div>
   <TopNav />
   <main id="main" tabindex="-1">

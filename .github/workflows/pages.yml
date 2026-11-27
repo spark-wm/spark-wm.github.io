@@ -20,13 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.12'
-      - name: Cut the fonts to the characters on the page
-        run: |
-          pip install 'fonttools[woff]==4.55.3'
-          python tools/build_fonts.py
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc

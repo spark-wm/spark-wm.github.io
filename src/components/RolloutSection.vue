@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import { mediaPath, rolloutClips, t } from '../content'
-import { tr } from '../state'
 </script>
 
 <template>
   <section id="rollout" class="block">
     <div class="wrap">
       <div class="block-head">
-        <h2>{{ tr(t.rollout.title) }}</h2>
-        <p class="lead text muted-lead">{{ tr(t.rollout.body) }}</p>
+        <h2>{{ t.rollout.title }}</h2>
+        <p class="lead text muted-lead">{{ t.rollout.body }}</p>
       </div>
       <div class="rows">
         <figure v-for="c in rolloutClips" :key="c.id" class="row">
-          <figcaption class="name">{{ tr(c.title) }}</figcaption>
+          <figcaption class="name">{{ c.title }}</figcaption>
           <ol class="frames">
             <li v-for="(s, i) in c.meta.revisit" :key="i">
-              <img :src="mediaPath(c.id, `at${i}.webp`)" :alt="`${tr(c.title)} ${Math.round(s)} s`" loading="lazy" />
+              <img :src="mediaPath(c.id, `at${i}.webp`)" :alt="`${c.title} ${Math.round(s)} s`" loading="lazy" />
               <span class="at num">{{ Math.round(s) }} s</span>
             </li>
           </ol>

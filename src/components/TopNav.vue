@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { t } from '../content'
-import { isDark, tr, ui } from '../state'
+import { isDark, ui } from '../state'
 import BrandMark from './BrandMark.vue'
 import UiIcon from './UiIcon.vue'
 
 const scrolled = ref(false)
 const active = ref('')
 const sections = ['demos', 'method', 'results', 'training', 'citation'] as const
-const label = (k: (typeof sections)[number]) => tr(t.nav[k])
+const label = (k: (typeof sections)[number]) => t.nav[k]
 
 let io: IntersectionObserver | null = null
 const onScroll = () => { scrolled.value = window.scrollY > 8 }
@@ -24,7 +24,6 @@ onMounted(() => {
 onBeforeUnmount(() => { window.removeEventListener('scroll', onScroll); io?.disconnect() })
 
 function toggleTheme() { ui.theme = isDark() ? 'light' : 'dark' }
-function toggleLang() { ui.lang = ui.lang === 'en' ? 'zh' : 'en' }
 function toggleSound() { ui.sound = !ui.sound }
 </script>
 
@@ -34,15 +33,14 @@ function toggleSound() { ui.sound = !ui.sound }
       <a href="#top" class="brand" aria-label="SparkWM">
         <BrandMark :size="28" wordmark />
       </a>
-      <nav class="links" :aria-label="tr(t.nav.sections)">
+      <nav class="links" :aria-label="t.nav.sections">
         <a v-for="s in sections" :key="s" :href="'#' + s" :class="{ on: active === s }">{{ label(s) }}</a>
       </nav>
       <div class="tools">
-        <button class="tool sound" :class="{ on: ui.sound }" :aria-pressed="ui.sound" :aria-label="tr(t.nav.sound)" :title="ui.sound ? tr(t.nav.soundOn) : tr(t.nav.soundOff)" @click="toggleSound">
+        <button class="tool sound" :class="{ on: ui.sound }" :aria-pressed="ui.sound" :aria-label="t.nav.sound" :title="ui.sound ? t.nav.soundOn : t.nav.soundOff" @click="toggleSound">
           <UiIcon :name="ui.sound ? 'sound-on' : 'sound-off'" />
         </button>
-        <button class="tool" :aria-label="isDark() ? tr(t.nav.toLight) : tr(t.nav.toDark)" :title="tr(t.nav.theme)" @click="toggleTheme"><UiIcon name="theme" /></button>
-        <button class="tool lang" :class="{ sys: ui.lang === 'en' }" :aria-label="tr(t.nav.langLabel)" @click="toggleLang"><span :lang="ui.lang === 'en' ? 'zh-CN' : 'en'">{{ tr(t.nav.lang) }}</span></button>
+        <button class="tool" :aria-label="isDark() ? t.nav.toLight : t.nav.toDark" :title="t.nav.theme" @click="toggleTheme"><UiIcon name="theme" /></button>
       </div>
     </div>
   </header>
@@ -120,9 +118,6 @@ function toggleSound() { ui.sound = !ui.sound }
 .tool.sound.on {
   color: var(--accent-ink);
 }
-.lang {
-  font-weight: 600;
-}
 @media (max-width: 980px) {
   .links {
     display: none;
@@ -138,9 +133,5 @@ function toggleSound() { ui.sound = !ui.sound }
   .row {
     gap: 8px;
   }
-}
-/* "中文" in the English page uses a system CJK font, so the Noto subset is not fetched just for it */
-.tool.lang.sys {
-  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
 }
 </style>

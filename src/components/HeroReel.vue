@@ -4,7 +4,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { clips, mediaPath, t } from '../content'
 import reelMeta from '../data/reel.json'
-import { demoPick, reportVisibility, tr, ui } from '../state'
+import { demoPick, reportVisibility, ui } from '../state'
 import UiIcon from './UiIcon.vue'
 
 const ID = 'hero'
@@ -38,7 +38,7 @@ function progress(k: number) {
   return Math.min(1, Math.max(0, (s - g.start) / (g.end - g.start)))
 }
 const clip = computed(() => byId[segs[cur.value].id])
-const prompt = computed(() => (clip.value?.prompt ? tr(clip.value.prompt) : ''))
+const prompt = computed(() => clip.value?.prompt ?? '')
 
 let raf = 0
 function tick() {
@@ -139,7 +139,7 @@ watch(small, () => {
 </script>
 
 <template>
-  <figure ref="root" class="reel" :aria-label="tr(t.reel.label)">
+  <figure ref="root" class="reel" :aria-label="t.reel.label">
     <div class="screen" @click="togglePlay">
       <video
         ref="video"
@@ -157,15 +157,15 @@ watch(small, () => {
       />
       <button v-if="muted" class="unmute" @click.stop="toggleSound">
         <UiIcon name="sound-on" :size="18" />
-        <span>{{ tr(t.player.turnOn) }}</span>
+        <span>{{ t.player.turnOn }}</span>
       </button>
     </div>
     <figcaption class="cap">
       <p class="now">
-        <span class="name">{{ clip ? tr(clip.title) : '' }}</span>
+        <span class="name">{{ clip ? clip.title : '' }}</span>
         <span v-if="prompt" class="prompt">{{ prompt }}</span>
         <button class="open" @click="openFull">
-          <span>{{ tr(t.reel.open) }}</span>
+          <span>{{ t.reel.open }}</span>
           <UiIcon name="chevron" :size="14" />
         </button>
       </p>
@@ -175,17 +175,17 @@ watch(small, () => {
             v-for="(g, k) in segs"
             :key="k"
             class="seg"
-            :aria-label="`${tr(t.reel.seg)} ${k + 1}: ${byId[g.id] ? tr(byId[g.id].title) : ''}`"
+            :aria-label="`${t.reel.seg} ${k + 1}: ${byId[g.id] ? byId[g.id].title : ''}`"
             :aria-current="k === cur"
             @click="jump(k)"
           >
             <span class="fill" :style="{ transform: `scaleX(${progress(k)})` }" />
           </button>
         </div>
-        <button class="ctrl" :aria-label="playing ? tr(t.player.pause) : tr(t.player.play)" @click="togglePlay">
+        <button class="ctrl" :aria-label="playing ? t.player.pause : t.player.play" @click="togglePlay">
           <UiIcon :name="playing ? 'pause' : 'play'" :size="16" />
         </button>
-        <button class="ctrl" :class="{ on: !muted }" :aria-label="muted ? tr(t.player.turnOn) : tr(t.player.turnOff)" @click="toggleSound">
+        <button class="ctrl" :class="{ on: !muted }" :aria-label="muted ? t.player.turnOn : t.player.turnOff" @click="toggleSound">
           <UiIcon :name="muted ? 'sound-off' : 'sound-on'" :size="16" />
         </button>
       </div>

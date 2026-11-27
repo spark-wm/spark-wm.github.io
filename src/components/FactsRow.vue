@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { facts, t } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { useInView } from '../composables/useInView'
 
 const root = ref<HTMLElement | null>(null)
@@ -33,9 +33,9 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
     <li v-for="(f, i) in shown" :key="i" class="fact">
       <p class="value num">
         <template v-if="f.value !== null"><span v-if="display[i].startsWith('≈')" class="approx">≈</span>{{ display[i].replace('≈', '') }}<span v-if="f.unit" class="unit">{{ f.unit }}</span></template>
-        <span v-else class="pending">{{ tr(t.pending) }}</span>
+        <span v-else class="pending">{{ t.pending }}</span>
       </p>
-      <p class="label">{{ tr(f.label) }}</p>
+      <p class="label">{{ f.label }}</p>
     </li>
   </ul>
 </template>

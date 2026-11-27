@@ -3,7 +3,7 @@
 // and the resulting end-to-end speed-up (shown once measured). Only facts stated elsewhere on the page.
 import { computed, ref } from 'vue'
 import { efficiency, t } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { useInView } from '../composables/useInView'
 import UiIcon from './UiIcon.vue'
 
@@ -19,7 +19,7 @@ const lit = new Set([3, 14, 22, 37, 41])
 
 <template>
   <figure ref="root" class="ov" :class="{ on }">
-    <p class="ov-label">{{ tr(O.label) }}</p>
+    <p class="ov-label">{{ O.label }}</p>
     <ol class="cards">
       <li v-for="(c, i) in O.cards" :key="i" class="card" :class="{ base: i === 0 }" :style="{ transitionDelay: on ? i * 90 + 'ms' : '0ms' }">
         <span class="idx num">{{ i }}</span>
@@ -51,13 +51,13 @@ const lit = new Set([3, 14, 22, 37, 41])
             <rect v-for="k in 8" :key="'b' + k" :x="2 + (k - 1) * 7.25" y="24" width="5.6" height="12" rx="1.2" class="acc" />
           </g>
         </svg>
-        <p class="name">{{ tr(c.name) }}</p>
-        <p class="note">{{ tr(c.note) }}</p>
-        <p v-if="c.cut" class="cut-inline"><span class="cut-label">{{ tr(O.saves) }}</span><span class="cut-what"><UiIcon name="down" :size="14" class="down" />{{ tr(c.cut) }}</span></p>
+        <p class="name">{{ c.name }}</p>
+        <p class="note">{{ c.note }}</p>
+        <p v-if="c.cut" class="cut-inline"><span class="cut-label">{{ O.saves }}</span><span class="cut-what"><UiIcon name="down" :size="14" class="down" />{{ c.cut }}</span></p>
       </li>
     </ol>
     <div v-if="speedup !== null" class="result">
-      <p class="result-label">{{ tr(O.result) }}</p>
+      <p class="result-label">{{ O.result }}</p>
       <p class="result-value"><span class="num big">{{ speedup >= 10 ? Math.round(speedup) : speedup.toFixed(1) }}<span class="unit">×</span></span></p>
     </div>
   </figure>

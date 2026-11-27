@@ -1,16 +1,14 @@
 <script setup lang="ts">
-// Bare page for exporting the training animation: index.html?record=pipeline&lang=zh
+// Bare page for exporting the training animation: index.html?record=pipeline
 import { ref } from 'vue'
 import { t } from '../content'
-import { tr, ui } from '../state'
 import PipelineFigure from './PipelineFigure.vue'
 
 const q = new URLSearchParams(location.search)
-if (q.get('lang') === 'en' || q.get('lang') === 'zh') ui.lang = q.get('lang') as 'en' | 'zh'
 const stage = ref(Number(q.get('stage') || 0))
 const N = t.training.stages.length
 function next() { stage.value = (stage.value + 1) % N; (window as unknown as { __stage: number }).__stage = stage.value }
-const name = (i: number) => (ui.lang === 'zh' ? `阶段 ${i + 1}：` : `Stage ${i + 1}: `) + tr(t.training.stages[i].name)
+const name = (i: number) => `${t.training.stageWord} ${i + 1}: ` + t.training.stages[i].name
 </script>
 
 <template>

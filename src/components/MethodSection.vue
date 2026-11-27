@@ -1,53 +1,51 @@
 <script setup lang="ts">
 import { chunkFigureClip, t } from '../content'
-import { tr } from '../state'
 import AccelOverview from './AccelOverview.vue'
 import ChunkFigure from './ChunkFigure.vue'
 import SparseFigure from './SparseFigure.vue'
 import QuantFigure from './QuantFigure.vue'
-
 </script>
 
 <template>
   <section id="method" class="block">
     <div class="wrap">
       <div class="block-head">
-        <h2>{{ tr(t.method.title) }}</h2>
-        <p class="lead text muted">{{ tr(t.method.body) }}</p>
+        <h2>{{ t.method.title }}</h2>
+        <p class="lead text muted">{{ t.method.body }}</p>
       </div>
 
       <AccelOverview />
 
       <div class="part">
         <div class="copy">
-          <h3>{{ tr(t.method.chunkTitle) }}</h3>
-          <p>{{ tr(t.method.chunkBody) }}</p>
+          <h3>{{ t.method.chunkTitle }}</h3>
+          <p>{{ t.method.chunkBody }}</p>
         </div>
         <div class="figure">
           <ChunkFigure :clip="chunkFigureClip" />
-          <p class="caption">{{ tr(t.method.chunkCaption) }}</p>
+          <p class="caption">{{ t.method.chunkCaption }}</p>
         </div>
       </div>
 
       <div class="part">
         <div class="copy">
-          <h3>{{ tr(t.method.sparseTitle) }}</h3>
-          <p>{{ tr(t.method.sparseBody) }}</p>
+          <h3>{{ t.method.sparseTitle }}</h3>
+          <p>{{ t.method.sparseBody }}</p>
         </div>
         <div class="figure">
           <SparseFigure />
-          <p class="caption">{{ tr(t.method.sparseCaption) }}</p>
+          <p class="caption">{{ t.method.sparseCaption }}</p>
         </div>
       </div>
 
       <div class="part">
         <div class="copy">
-          <h3>{{ tr(t.method.quantTitle) }}</h3>
-          <p>{{ tr(t.method.quantBody) }}</p>
+          <h3>{{ t.method.quantTitle }}</h3>
+          <p>{{ t.method.quantBody }}</p>
         </div>
         <div class="figure">
           <QuantFigure />
-          <p class="caption">{{ tr(t.method.quantCaption) }}</p>
+          <p class="caption">{{ t.method.quantCaption }}</p>
         </div>
       </div>
 

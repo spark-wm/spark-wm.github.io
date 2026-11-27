@@ -3,7 +3,7 @@
 // duration and emits `cycle` after every loop, so a parent can autoplay through the stages.
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { t } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { clock } from '../clock'
 
 const props = withDefaults(defineProps<{ stage: number; playing?: boolean }>(), { playing: true })
@@ -86,10 +86,10 @@ const s0 = computed(() => {
   const dz = (i: number) => 3 * (1 - u) ** 2 * (P[1][i] - P[0][i]) + 6 * (1 - u) * u * (P[2][i] - P[1][i]) + 3 * u ** 2 * (P[3][i] - P[2][i])
   const ang = (Math.atan2(dz(1), dz(0)) * 180) / Math.PI
   const labels: Label[] = [
-    { x: 24, y: 24, text: tr(L.wholeClip) },
-    { x: 456, y: 24, text: tr(L.steps30), anchor: 'end', strong: true },
-    { x: 24, y: 196, text: tr(L.sound) },
-    { x: 24, y: 290, text: tr(L.camera) },
+    { x: 24, y: 24, text: L.wholeClip },
+    { x: 456, y: 24, text: L.steps30, anchor: 'end', strong: true },
+    { x: 24, y: 196, text: L.sound },
+    { x: 24, y: 290, text: L.camera },
   ]
   return { sl, noise, arcs, bars, cam: { x: bz(0), y: bz(1), ang }, path: `M${P[0][0]} ${P[0][1]} C ${P[1][0]} ${P[1][1]}, ${P[2][0]} ${P[2][1]}, ${P[3][0]} ${P[3][1]}`, labels }
 })
@@ -114,11 +114,11 @@ const causal = computed(() => {
     })
   }
   const labels: Label[] = [
-    { x: 24, y: 24, text: tr(L.past) },
-    { x: 456, y: 24, text: tr(L.steps30), anchor: 'end', strong: true },
-    { x: (sl.x(w0) + sl.x(c - 1) + sl.w) / 2, y: 196, text: tr(t.player.memory), anchor: 'middle' },
+    { x: 24, y: 24, text: L.past },
+    { x: 456, y: 24, text: L.steps30, anchor: 'end', strong: true },
+    { x: (sl.x(w0) + sl.x(c - 1) + sl.w) / 2, y: 196, text: t.player.memory, anchor: 'middle' },
   ]
-  if (sparse) labels.push({ x: 456, y: 46, text: dense ? tr(L.dense) : tr(L.sparse10), anchor: 'end', accent: !dense })
+  if (sparse) labels.push({ x: 456, y: 46, text: dense ? L.dense : L.sparse10, anchor: 'end', accent: !dense })
   return { sl, c, w0, links, labels }
 })
 
@@ -139,11 +139,11 @@ const s3 = computed(() => {
   const cur = jumps.find((j) => j.f > 0 && j.f < 1)
   const sx = cur ? lerp(cur.a, cur.b, cur.f) : done === 4 ? x1 : x0
   const labels: Label[] = [
-    { x: x0, y: 70, text: tr(L.teacher30) },
-    { x: x0, y: 286, text: tr(L.student4), accent: true },
-    { x: x0, y: 168, text: tr(L.noise) },
-    { x: x1, y: 168, text: tr(L.clean), anchor: 'end' },
-    { x: (x0 + x1) / 2, y: 168, text: tr(L.levels48), anchor: 'middle' },
+    { x: x0, y: 70, text: L.teacher30 },
+    { x: x0, y: 286, text: L.student4, accent: true },
+    { x: x0, y: 168, text: L.noise },
+    { x: x1, y: 168, text: L.clean, anchor: 'end' },
+    { x: (x0 + x1) / 2, y: 168, text: L.levels48, anchor: 'middle' },
   ]
   return { x0, x1, ticks48, tx, jumps, sx, labels }
 })
@@ -158,14 +158,14 @@ const s4 = computed(() => {
   const gx1 = sl.c(5)
   const gx0 = sl.c(0)
   const labels: Label[] = [
-    { x: 24, y: 24, text: tr(L.generate) },
-    { x: 456, y: 24, text: tr(L.steps4), anchor: 'end', strong: true },
-    { x: 240, y: 50, text: tr(L.grad), anchor: 'middle', strong: grad > 0 },
-    { x: 122, y: 256, text: tr(L.real), anchor: 'middle', strong: score > 0 },
-    { x: 358, y: 256, text: tr(L.fake), anchor: 'middle', strong: score > 0 },
+    { x: 24, y: 24, text: L.generate },
+    { x: 456, y: 24, text: L.steps4, anchor: 'end', strong: true },
+    { x: 240, y: 50, text: L.grad, anchor: 'middle', strong: grad > 0 },
+    { x: 122, y: 256, text: L.real, anchor: 'middle', strong: score > 0 },
+    { x: 358, y: 256, text: L.fake, anchor: 'middle', strong: score > 0 },
     { x: 240, y: 196, text: 'DMD', anchor: 'middle', strong: score > 0 },
-    { x: 121, y: 170, text: tr(L.qAttn), anchor: 'middle', strong: true },
-    { x: 377, y: 170, text: tr(L.qFfn), anchor: 'middle', strong: true },
+    { x: 121, y: 170, text: L.qAttn, anchor: 'middle', strong: true },
+    { x: 377, y: 170, text: L.qFfn, anchor: 'middle', strong: true },
   ]
   // fake quantization: while a chunk is being generated, the continuous ramp in each chip snaps to steps
   const frac = gen >= 6 ? 1 : gen % 1
@@ -185,10 +185,10 @@ const s5 = computed(() => {
   const cache = Array.from({ length: 5 }, (_, i) => ({ x: sl.x(i) - shift * step, o: i === 0 ? 1 - shift : 1, id: m * 10 + i }))
   const curX = sl.x(5) - shift * step
   const labels: Label[] = [
-    { x: (sl.x(0) + sl.x(4) + sl.w) / 2, y: 70, text: tr(t.player.memory), anchor: 'middle' },
-    { x: 456, y: 24, text: tr(L.steps4), anchor: 'end', strong: true },
-    { x: (sl.x(0) + sl.x(4) + sl.w) / 2 - 30, y: 226, text: tr(L.writer), anchor: 'middle', strong: write > 0 && write < 1, accent: write > 0 && write < 1 },
-    { x: sl.c(5), y: 226, text: tr(L.denoiser), anchor: 'middle', strong: denoise > 0 && denoise < 1, accent: denoise > 0 && denoise < 1 },
+    { x: (sl.x(0) + sl.x(4) + sl.w) / 2, y: 70, text: t.player.memory, anchor: 'middle' },
+    { x: 456, y: 24, text: L.steps4, anchor: 'end', strong: true },
+    { x: (sl.x(0) + sl.x(4) + sl.w) / 2 - 30, y: 226, text: L.writer, anchor: 'middle', strong: write > 0 && write < 1, accent: write > 0 && write < 1 },
+    { x: sl.c(5), y: 226, text: L.denoiser, anchor: 'middle', strong: denoise > 0 && denoise < 1, accent: denoise > 0 && denoise < 1 },
   ]
   return { sl, cache, curX, noise: 1 - denoise, write, labels, arrowFrom: sl.c(5), arrowTo: sl.c(4) }
 })
@@ -215,11 +215,11 @@ const s6 = computed(() => {
   const toSec = (l: number) => { const v = l * (158 / 24 / 47); return v >= 20 ? '20' : v.toFixed(1).replace(/\.0$/, '') }
   const others = [50, 75, 100, 145].map((l) => ({ w: (l / 145) * 340, on: l === Lt, sec: toSec(l) }))
   const labels: Label[] = [
-    { x: 24, y: 24, text: `${tr(L.rollout)} ${secText} ${ui.lang === 'zh' ? '秒' : 's'}`, strong: true },
-    { x: 456, y: 24, text: tr(L.steps4), anchor: 'end', strong: true },
+    { x: 24, y: 24, text: `${L.rollout} ${secText} s`, strong: true },
+    { x: 456, y: 24, text: L.steps4, anchor: 'end', strong: true },
   ]
-  others.forEach((o, i) => labels.push({ x: 24 + o.w + 8, y: 213 + i * 18, text: `${o.sec} ${ui.lang === 'zh' ? '秒' : 's'}`, strong: o.on }))
-  if (showWin) labels.push({ x: 24 + (starts[active] + 23.5) * scale, y: 92, text: tr(L.window), anchor: 'middle', accent: true })
+  others.forEach((o, i) => labels.push({ x: 24 + o.w + 8, y: 213 + i * 18, text: `${o.sec} s`, strong: o.on }))
+  if (showWin) labels.push({ x: 24 + (starts[active] + 23.5) * scale, y: 92, text: L.window, anchor: 'middle', accent: true })
   return { scale, width, starts, active, showWin, chunkTicks, others, labels }
 })
 

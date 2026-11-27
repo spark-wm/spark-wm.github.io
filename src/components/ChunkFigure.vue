@@ -3,7 +3,7 @@
 // 5-chunk memory and the oldest chunk leaves. Noise is blended on pixels for illustration.
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { mediaPath, t, type Clip } from '../content'
-import { tr, ui } from '../state'
+import { ui } from '../state'
 import { useInView } from '../composables/useInView'
 import UiIcon from './UiIcon.vue'
 
@@ -29,8 +29,8 @@ let raf = 0
 const memory = computed(() => { const out: number[] = []; for (let k = Math.max(0, c.value - 5); k < c.value; k++) out.push(k); return out })
 const tileStyle = (k: number) => ({ backgroundImage: `url(${sprite})`, backgroundSize: `${N * 100}% 100%`, backgroundPosition: `${(k / (N - 1)) * 100}% 0` })
 const status = computed(() => {
-  if (step.value > 4) return tr(t.method.done)
-  return ui.lang === 'zh' ? `第 ${step.value} 步，共 4 步` : `Step ${step.value} of 4`
+  if (step.value > 4) return t.method.done
+  return `Step ${step.value} of 4`
 })
 
 function makeNoise() {
@@ -125,17 +125,17 @@ onBeforeUnmount(() => { clearTimeout(timer); cancelAnimationFrame(raf) })
   <figure ref="root" class="fig stage-fig">
     <div class="grid">
       <div class="col cond">
-        <p class="cap" :class="{ one: ui.lang === 'zh' }">{{ tr(t.method.condition) }}</p>
+        <p class="cap">{{ t.method.condition }}</p>
         <div class="tile poster" :style="{ backgroundImage: `url(${mediaPath(clip.id, 'poster-sm.webp')})` }" />
       </div>
       <div class="col mem">
-        <p class="cap">{{ tr(t.method.cache) }}</p>
+        <p class="cap">{{ t.method.cache }}</p>
         <TransitionGroup name="slide" tag="div" class="mem-row">
           <div v-for="k in memory" :key="k" class="tile" :style="tileStyle(k)" />
         </TransitionGroup>
       </div>
       <div class="col next">
-        <p class="cap">{{ tr(t.method.current) }}</p>
+        <p class="cap">{{ t.method.current }}</p>
         <div class="canvas-wrap" :class="{ done: step > 4 }">
           <canvas ref="canvas" :width="clip.meta.chunksBig.tileW" :height="clip.meta.chunksBig.tileH" />
         </div>
@@ -145,7 +145,7 @@ onBeforeUnmount(() => { clearTimeout(timer); cancelAnimationFrame(raf) })
         </div>
       </div>
     </div>
-    <button class="pause" :aria-label="paused ? tr(t.player.play) : tr(t.player.pause)" @click="togglePause">
+    <button class="pause" :aria-label="paused ? t.player.play : t.player.pause" @click="togglePause">
       <UiIcon :name="paused ? 'play' : 'pause'" :size="16" />
     </button>
   </figure>
@@ -165,10 +165,6 @@ onBeforeUnmount(() => { clearTimeout(timer); cancelAnimationFrame(raf) })
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 3.2fr) minmax(0, 2.4fr);
   gap: 16px;
   align-items: start;
-}
-.cap.one {
-  /* the Chinese label is one character too wide for the narrow column; let it run into the gap */
-  white-space: nowrap;
 }
 .cap {
   font-size: 13px;

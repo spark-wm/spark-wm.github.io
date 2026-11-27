@@ -29,11 +29,11 @@
 
 ## Overview
 
-SparkWM is an audio-video world model post-trained from MiniMax H3 33B. H3 generates a whole audio-video clip of about 6.6 s at once in about 30 denoising steps; SparkWM generates it chunk by chunk, in only 4 denoising steps per chunk.
+SparkWM is an audio-video world model post-trained from MiniMax H3 33B. H3 generates a whole audio-video clip of about 6.6 s at once, in about 30 denoising steps; SparkWM generates video and sound chunk by chunk, in only 4 denoising steps per chunk.
 
-Each chunk covers about 0.7 s of video and is conditioned on a text prompt, the first frame and a camera trajectory. From its KV cache, a chunk reads only the prompt, the first frame and up to 5 preceding chunks, so the cost per chunk does not grow with video length. From chunk 3 on, sparse attention cuts compute further, and the model is trained with 8-bit (MXFP8) fake quantization; a single RTX 5090 generates 10 s of audio and video.
+Each chunk covers about 0.7 s of video and is conditioned on a text prompt, a given first frame and a camera trajectory. To generate a chunk, the model reads from its KV cache only the prompt, the first frame and up to 5 preceding chunks, so the compute per chunk does not grow with video length. From chunk 3 on, sparse attention reduces the attention compute further. The model is also trained with 8-bit (MXFP8) fake quantization. A single RTX 5090 can generate 10 s of video and sound.
 
-Each demo clip on the project page is 20 s long, about 29 chunks, generated chunk by chunk from its first frame.
+Each demo clip on the project page is 20 s long (about 29 chunks) and was generated chunk by chunk from its first frame.
 
 ## From H3 to SparkWM
 
@@ -70,4 +70,4 @@ Pushing to `main` builds and deploys the site with GitHub Actions. Maintainer no
 
 ## Acknowledgements
 
-SparkWM is post-trained from [MiniMax H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) 33B and builds on [SolarWM](https://github.com/Junchao-cs/SolarWM), RoLA, [SparkDiffusion](https://sparkdiffusion.github.io/), Light Forcing, ForgeWM, Causal Forcing and Causal Forcing++, Self Forcing, Self Gradient Forcing and SGF+, DMD2 and PRoPE. Use of H3 and its outputs, including the sample clips on the page, follows the [MiniMax H3 Community License](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/LICENSE). The fonts in `fonts/` are under the SIL Open Font License 1.1.
+SparkWM is post-trained from [MiniMax H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) 33B and builds on [SolarWM](https://github.com/Junchao-cs/SolarWM), RoLA, [SparkDiffusion](https://sparkdiffusion.github.io/), Light Forcing, ForgeWM, Causal Forcing, Causal Forcing++, Self Forcing, Self Gradient Forcing, SGF+, DMD2 and PRoPE. Use of H3 and its outputs, including the sample clips on the page, is subject to the [MiniMax H3 Community License](https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/LICENSE). The fonts in `fonts/` are under the SIL Open Font License 1.1.
