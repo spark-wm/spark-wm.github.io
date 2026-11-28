@@ -67,8 +67,9 @@ function meta(id: string): ClipMeta {
 const clip = (id: string, title: string): Clip => ({ id, title, prompt: null, meta: meta(id), audioLead: 0.3 })
 
 /**
- * The demo wall, in this order. Seven clips from the team's 11-26 release demos, picked on 11-27 after checking every
- * 20 s clip frame by frame: realistic scenes first, then the two fantasy ones.
+ * The demo wall, in this order. Clips from the team's 11-26 release demos: seven picked on 11-27 after checking every
+ * 20 s clip frame by frame, plus the snowboard take the project lead chose (11-28). Realistic scenes first, then the
+ * two fantasy ones.
  */
 export const clips: Clip[] = [
   clip('dance-studio', 'Dance studio'),
@@ -76,6 +77,7 @@ export const clips: Clip[] = [
   clip('waterfall-trail', 'Waterfall trail'),
   clip('balloon', 'Hot-air balloon'),
   clip('subway-guitar', 'Subway guitarist'),
+  clip('snowboard', 'Snowboarder'),
   clip('sunken-city', 'Sunken city'),
   clip('lantern-boat', 'Lantern boat'),
 ]
