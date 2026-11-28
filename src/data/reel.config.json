@@ -1,11 +1,35 @@
 {
   "crossfade": 0.5,
   "segments": [
-    { "id": "sunken-city", "from": 0, "to": 5 },
-    { "id": "night-harbor", "from": 0, "to": 5 },
-    { "id": "dance-studio", "from": 1, "to": 6 },
-    { "id": "lantern-boat", "from": 0, "to": 5 },
-    { "id": "space-greenhouse", "from": 7, "to": 12 },
-    { "id": "coast-helicopter", "from": 10, "to": 15 }
+    {
+      "id": "sunken-city",
+      "from": 0,
+      "to": 5
+    },
+    {
+      "id": "dance-studio",
+      "from": 1,
+      "to": 6
+    },
+    {
+      "id": "kayak-cove",
+      "from": 5,
+      "to": 10
+    },
+    {
+      "id": "balloon",
+      "from": 10,
+      "to": 15
+    },
+    {
+      "id": "lantern-boat",
+      "from": 0,
+      "to": 5
+    },
+    {
+      "id": "waterfall-trail",
+      "from": 0,
+      "to": 5
+    }
   ]
 }

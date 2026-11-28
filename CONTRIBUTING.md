@@ -1,6 +1,6 @@
-# SparkWM 项目主页：维护说明
+# SparkStream 项目主页：维护说明
 
-Maintainer notes for the SparkWM team (in Chinese). 仓库首页的介绍见 [README.md](README.md)。
+Maintainer notes for the SparkStream team (in Chinese). 仓库首页的介绍见 [README.md](README.md)。
 
 网址：<https://spark-wm.github.io/>
 
@@ -16,7 +16,7 @@ Maintainer notes for the SparkWM team (in Chinese). 仓库首页的介绍见 [RE
 | RTX 5090 每块耗时 | `efficiency.speed`（一张卡、四张卡），以及 `facts` 的第一项 |
 | 和 H3 的端到端耗时对比 | `efficiency.latency`：`setup` 写测试条件，`rows` 里填两行的秒数 |
 | 样片的提示词 | `clips[].prompt` |
-| 引用 | `bibtex` 是 SparkWM 自己的条目，论文上 arXiv 后换成 arXiv 导出的 BibTeX；`relatedBibtex` 是 SparkDiffusion 和 RoLA 两条，照 SparkDiffusion 仓库 README 里的写法 |
+| 引用 | `bibtex` 是 SparkStream 自己的条目，论文上 arXiv 后换成 arXiv 导出的 BibTeX；`relatedBibtex` 是 SparkDiffusion 和 RoLA 两条，照 SparkDiffusion 仓库 README 里的写法 |
 | 正式发布 | 把 `DRAFT` 改成 `false`，并删掉 `index.html` 里 `robots noindex` 那一行 |
 
 `DRAFT = true` 时，页面顶上有一条预览横幅，还没测的数在“加速效果”一节标一次“待补”；改成 `false` 后，空着的地方直接隐藏，“加速效果”一节在一个数都没有时整节不显示。
@@ -47,11 +47,11 @@ npm run dev
 
 都在 `.github/assets/`，不进网站产物。
 
-- `sparkwm-reel.webp`：首屏轮播的无声动图。换了轮播片段后重新生成：
+- `sparkstream-reel.webp`：首屏轮播的无声动图。换了轮播片段后重新生成：
   ```bash
-  ffmpeg -i public/media/reel/reel-sd.mp4 -vf "fps=10,scale=800:-2:flags=lanczos" -c:v libwebp_anim -quality 40 -compression_level 6 -loop 0 -an .github/assets/sparkwm-reel.webp
+  ffmpeg -i public/media/reel/reel-sd.mp4 -vf "fps=10,scale=800:-2:flags=lanczos" -c:v libwebp_anim -quality 40 -compression_level 6 -loop 0 -an .github/assets/sparkstream-reel.webp
   ```
-- `sparkwm-pipeline-en.gif`：训练流程动画，从网页（`index.html?record=pipeline`）上逐帧录下来的，改了 `PipelineFigure.vue` 或 `content.ts` 里 `training.fig` 的标签要重录。
-- `sparkwm-pipeline-zh.gif`：中文 README 用的同一段动画，是网页还有中文版时录的，现在不能重录；动画改了以后，让 `README.zh-CN.md` 也用英文那张，并删掉这个文件。
-- `sparkwm-logo-light.svg`、`sparkwm-logo-dark.svg`：从 `BrandMark.vue` 导出，按 GitHub 的深浅色主题切换。
+- `sparkstream-pipeline-en.gif`：训练流程动画，从网页（`index.html?record=pipeline`）上逐帧录下来的，改了 `PipelineFigure.vue` 或 `content.ts` 里 `training.fig` 的标签要重录。
+- `sparkstream-pipeline-zh.gif`：中文 README 用的同一段动画，是网页还有中文版时录的，现在不能重录；动画改了以后，让 `README.zh-CN.md` 也用英文那张，并删掉这个文件。
+- `sparkstream-logo-light.svg`、`sparkstream-logo-dark.svg`：从 `BrandMark.vue` 导出，按 GitHub 的深浅色主题切换。
 - `social-preview.jpg`（1280×640）：仓库的社交预览图，在 Settings → General → Social preview 里上传。它和 `public/og.jpg`（1200×630，网页的分享卡片）是同一个版式，用的是模型生成的画面。

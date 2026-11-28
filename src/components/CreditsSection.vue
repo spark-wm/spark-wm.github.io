@@ -71,7 +71,7 @@ const relatedEntries = relatedBibtex.split('\n\n')
       </div>
     </div>
     <footer class="wrap foot">
-      <span class="brand" aria-label="SparkWM"><BrandMark :size="22" wordmark /></span>
+      <span class="brand" aria-label="SparkStream"><BrandMark :size="22" wordmark /></span>
       <span class="muted">2026</span>
     </footer>
   </section>

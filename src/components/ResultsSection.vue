@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Speed-up. The claim (group, 11-23): SparkWM runs on a single RTX 5090, plus the end-to-end speed-up of
+// Speed-up. The claim (group, 11-23): SparkStream runs on a single RTX 5090, plus the end-to-end speed-up of
 // distributed inference on RTX 5090s. Headline factor, single-card clip length, and an end-to-end latency
 // chart (log scale). Numbers come from content.ts (efficiency). Until the speed-up is measured, a DRAFT
 // build shows one pending marker and equal-width placeholder bars (so no ratio is implied).

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Overview of where SparkWM saves compute relative to H3: one card per change, what each one cuts,
+// Overview of where SparkStream saves compute relative to H3: one card per change, what each one cuts,
 // and the resulting end-to-end speed-up (shown once measured). Only facts stated elsewhere on the page.
 import { computed, ref } from 'vue'
 import { efficiency, t } from '../content'

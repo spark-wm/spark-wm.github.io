@@ -66,31 +66,29 @@ function meta(id: string): ClipMeta {
 }
 const clip = (id: string, title: string): Clip => ({ id, title, prompt: null, meta: meta(id), audioLead: 0.3 })
 
-/** The demo wall, in this order. Clips picked from the team's 11-26 release demos (one per scene). */
+/**
+ * The demo wall, in this order. Seven clips from the team's 11-26 release demos, picked on 11-27 after checking every
+ * 20 s clip frame by frame: realistic scenes first, then the two fantasy ones.
+ */
 export const clips: Clip[] = [
-  clip('sunken-city', 'Sunken city'),
-  clip('night-harbor', 'Night harbor'),
   clip('dance-studio', 'Dance studio'),
-  clip('lantern-boat', 'Lantern boat'),
-  clip('space-greenhouse', 'Space greenhouse'),
-  clip('crystal-bridge', 'Crystal bridge'),
-  clip('waterfall-trail', 'Waterfall trail'),
-  clip('coast-helicopter', 'Coastal helicopter'),
-  clip('balloon', 'Hot-air balloon'),
   clip('kayak-cove', 'Kayak cove'),
+  clip('waterfall-trail', 'Waterfall trail'),
+  clip('balloon', 'Hot-air balloon'),
   clip('subway-guitar', 'Subway guitarist'),
-  clip('snowboard', 'Snowboarder'),
+  clip('sunken-city', 'Sunken city'),
+  clip('lantern-boat', 'Lantern boat'),
 ]
 const byId = (id: string) => clips.find((c) => c.id === id) ?? clips[0]
 /** Clip whose frames illustrate chunk-by-chunk generation in the method section (keep t.method.chunkCaption in step). */
 export const chunkFigureClip = byId('waterfall-trail')
-/** Clips shown as 5-second strips in the long-video section. */
-export const rolloutClips = ['sunken-city', 'waterfall-trail', 'coast-helicopter'].map(byId)
+/** Clips shown as 5-second strips in the long-video section: the three that keep their subject for the full 20 s. */
+export const rolloutClips = ['dance-studio', 'balloon', 'waterfall-trail'].map(byId)
 
 export const mediaPath = (id: string, file: string) => `media/${id}/${file}`
 
 /** Slots on the demo wall. In a DRAFT build the slots without a clip show a pending marker; the release shows only real clips. */
-export const wallSlots = 12
+export const wallSlots = 8
 
 /** Shown in the facts row. value null = pending. */
 export const facts: { value: string | null; unit?: string; label: string; countTo?: number }[] = [
@@ -101,21 +99,21 @@ export const facts: { value: string | null; unit?: string; label: string; countT
   { value: '33', unit: 'B', countTo: 33, label: 'H3 parameters, frozen during training' },
 ]
 
-/** Speed figures. The claim is: SparkWM runs on a single RTX 5090, plus the end-to-end speed-up of distributed inference on RTX 5090s. */
+/** Speed figures. The claim is: SparkStream runs on a single RTX 5090, plus the end-to-end speed-up of distributed inference on RTX 5090s. */
 export const efficiency = {
   /** Longest clip one RTX 5090 (32 GB) generates, in seconds (Shikun, group chat 11-23 20:32). */
   singleGpuSeconds: 10,
   /** End-to-end speed-up of distributed inference on `gpus` RTX 5090s. null = pending. */
   multi: { speedup: null as number | null, gpus: null as number | null },
   /**
-   * End-to-end time to generate the same clip, H3 vs SparkWM. seconds null = pending; the speed-up is
+   * End-to-end time to generate the same clip, H3 vs SparkStream. seconds null = pending; the speed-up is
    * computed from the first and the `ours` row once both are filled. `setup` is the measurement condition.
    */
   latency: {
     setup: null as string | null,
     rows: [
       { name: 'H3', note: 'whole clip at once, about 30 steps', seconds: null as number | null, ours: false },
-      { name: 'SparkWM', note: 'chunk by chunk, 4 steps per chunk', seconds: null as number | null, ours: true },
+      { name: 'SparkStream', note: 'chunk by chunk, 4 steps per chunk', seconds: null as number | null, ours: true },
     ],
   },
 }
@@ -124,14 +122,14 @@ export const efficiency = {
  * BibTeX in the format arXiv exports. The author field follows `authors`.
  * Replace this entry with the arXiv export once the report is posted.
  */
-export const bibtex = `@misc{sparkwm2026,
-  title={SparkWM},
+export const bibtex = `@misc{sparkstream2026,
+  title={SparkStream},
   author={${authors.map((a) => a.name).join(' and ')}},
   year={2026},
 }`
 
 /**
- * Prior work SparkWM builds on, shown as a second BibTeX block. Both entries are copied from the
+ * Prior work SparkStream builds on, shown as a second BibTeX block. Both entries are copied from the
  * SparkDiffusion README (github.com/AlibabaResearch/SparkDiffusion) and match the arXiv records.
  */
 export const relatedBibtex = `@misc{liu2026sparkdiffusionmitigatinghighsparsitytrap,
@@ -159,7 +157,7 @@ export const relatedBibtex = `@misc{liu2026sparkdiffusionmitigatinghighsparsityt
 // ---------------------------------------------------------------------------------------------
 
 export const t = {
-  pageTitle: 'SparkWM: Audio-Video World Model',
+  pageTitle: 'SparkStream: Streaming Long Audio-Visual Generation',
   nav: {
     demos: 'Demos',
     method: 'Method',
@@ -176,7 +174,7 @@ export const t = {
     skip: 'Skip to content',
   },
   hero: {
-    lead: 'SparkWM is an audio-video world model post-trained from MiniMax H3 33B. H3 generates a whole audio-video clip of about 6.6 s at once, in about 30 denoising steps; SparkWM generates video and sound chunk by chunk, in only 4 denoising steps per chunk.',
+    lead: 'SparkStream is a streaming audio-video generation model post-trained from MiniMax H3 33B. H3 generates a whole audio-video clip of about 6.6 s at once, in about 30 denoising steps; SparkStream generates video and sound chunk by chunk, in only 4 denoising steps per chunk.',
     base: 'Each chunk covers about 0.7 s of video and is conditioned on a text prompt, a given first frame and a camera trajectory. To generate a chunk, the model reads from its KV cache only the prompt, the first frame and up to 5 preceding chunks, so the compute per chunk does not grow with video length. From chunk 3 on, sparse attention reduces the attention compute further. The model is also trained with 8-bit (MXFP8) fake quantization. A single RTX 5090 can generate 10 s of video and sound.',
     paper: 'Paper',
     code: 'Code',
@@ -207,9 +205,9 @@ export const t = {
   },
   method: {
     title: 'Method',
-    body: 'H3 applies full attention across all frames of the clip. SparkWM changes the generation scheme, the number of denoising steps, the attention computation and the numeric precision.',
+    body: 'H3 applies full attention across all frames of the clip. SparkStream changes the generation scheme, the number of denoising steps, the attention computation and the numeric precision.',
     chunkTitle: 'Chunk-by-chunk generation, 4 steps per chunk',
-    chunkBody: 'Video is generated in chunks of about 0.7 s. For each chunk, SparkWM reads the prompt, the first frame and up to 5 preceding chunks from its KV cache, denoises in 4 steps, then writes the chunk into the cache and drops the oldest one. The cache never holds more than 5 chunks, so the compute per chunk does not grow with video length.',
+    chunkBody: 'Video is generated in chunks of about 0.7 s. For each chunk, SparkStream reads the prompt, the first frame and up to 5 preceding chunks from its KV cache, denoises in 4 steps, then writes the chunk into the cache and drops the oldest one. The cache never holds more than 5 chunks, so the compute per chunk does not grow with video length.',
     chunkCaption: 'Frames from the Waterfall trail clip. Noise is drawn on pixels for illustration; the model denoises latents.',
     condition: 'Prompt and first frame',
     cache: '5 most recent chunks',
@@ -225,7 +223,7 @@ export const t = {
     always: 'always read',
     promptFrame: 'Prompt, first frame',
     quantTitle: 'Quantization-aware training (QAT)',
-    quantBody: 'SparkWM is built to run on a single RTX 5090 (32 GB). To this end, from training stage 5 on, the weights and activations of the backbone’s attention and feed-forward layers are fake-quantized to MXFP8 in the forward pass, so the model adapts to 8-bit precision during training. Our inference code reuses the quantization settings recorded in training and needs no separate post-training quantization.',
+    quantBody: 'SparkStream is built to run on a single RTX 5090 (32 GB). To this end, from training stage 5 on, the weights and activations of the backbone’s attention and feed-forward layers are fake-quantized to MXFP8 in the forward pass, so the model adapts to 8-bit precision during training. Our inference code reuses the quantization settings recorded in training and needs no separate post-training quantization.',
     quantCaption: 'MXFP8 splits values into groups of 32 that share one power-of-two scale, and rounds each value to the nearest 8-bit float.',
     qGroup: 'One group of 32 values sharing one scale',
     qBits: 'bits per value',
@@ -233,7 +231,7 @@ export const t = {
     qSnap: 'MXFP8 value',
     qGrid: 'representable 8-bit values',
     overview: {
-      label: 'From H3 to SparkWM',
+      label: 'From H3 to SparkStream',
       saves: 'Reduces',
       result: 'End-to-end speed-up',
       cards: [
@@ -247,7 +245,7 @@ export const t = {
   },
   training: {
     title: 'Training pipeline',
-    body: 'SparkWM is trained in seven successive stages. Only the LoRA and RoLA parameters added to H3 are trained; the 33B H3 weights stay frozen. Stage 1 adds camera control to H3, and stages 2 to 4 turn it into a chunk-by-chunk model with sparse attention and 4 denoising steps. From stage 5 on, the model is trained on its own generated history and adapted to quantized inference and longer videos.',
+    body: 'SparkStream is trained in seven successive stages. Only the LoRA and RoLA parameters added to H3 are trained; the 33B H3 weights stay frozen. Stage 1 adds camera control to H3, and stages 2 to 4 turn it into a chunk-by-chunk model with sparse attention and 4 denoising steps. From stage 5 on, the model is trained on its own generated history and adapted to quantized inference and longer videos.',
     stages: [
       {
         name: 'Camera control',
@@ -325,7 +323,7 @@ export const t = {
   },
   results: {
     title: 'Speed-up',
-    body: 'SparkWM runs on a single RTX 5090. The numbers below are the end-to-end speed-up over H3 when SparkWM inference is distributed over several RTX 5090s, and the time each model takes to generate the same clip.',
+    body: 'SparkStream runs on a single RTX 5090. The numbers below are the end-to-end speed-up over H3 when SparkStream inference is distributed over several RTX 5090s, and the time each model takes to generate the same clip.',
     measuring: 'Measurements pending',
     headline: 'End-to-end speed-up, distributed inference on RTX 5090s',
     headlineN: 'End-to-end speed-up, {n} RTX 5090s',
@@ -340,13 +338,13 @@ export const t = {
   credits: {
     title: 'Team',
     authorsPending: 'Author list to be added',
-    ack: 'SparkWM is post-trained from MiniMax H3 33B and builds on SolarWM, RoLA, SparkDiffusion, Light Forcing, ForgeWM, Causal Forcing, Causal Forcing++, Self Forcing, Self Gradient Forcing, SGF+, DMD2 and PRoPE. Use of H3 and its outputs is subject to the MiniMax H3 Community License.',
+    ack: 'SparkStream is post-trained from MiniMax H3 33B and builds on SolarWM, RoLA, SparkDiffusion, Light Forcing, ForgeWM, Causal Forcing, Causal Forcing++, Self Forcing, Self Gradient Forcing, SGF+, DMD2 and PRoPE. Use of H3 and its outputs is subject to the MiniMax H3 Community License.',
     cite: 'Citation',
     related: 'Related work',
     copy: 'Copy',
     copyBoth: 'Copy both',
     copied: 'Copied',
-    copyMain: 'Copy the SparkWM citation',
+    copyMain: 'Copy the SparkStream citation',
     copyRelated: 'Copy the related-work citations',
   },
   pending: 'pending',

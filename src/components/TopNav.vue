@@ -30,7 +30,7 @@ function toggleSound() { ui.sound = !ui.sound }
 <template>
   <header class="nav" :class="{ scrolled }">
     <div class="wrap row">
-      <a href="#top" class="brand" aria-label="SparkWM">
+      <a href="#top" class="brand" aria-label="SparkStream">
         <BrandMark :size="28" wordmark />
       </a>
       <nav class="links" :aria-label="t.nav.sections">

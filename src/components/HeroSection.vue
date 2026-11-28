@@ -20,7 +20,7 @@ const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; labe
   <section id="top" class="hero">
     <div class="wrap">
       <div class="head">
-        <h1 class="title">Spark<span class="wm">WM</span></h1>
+        <h1 class="title">Spark<span class="wm">Stream</span></h1>
         <p class="lead">{{ t.hero.lead }}</p>
         <div class="meta">
           <div class="who">
@@ -65,10 +65,10 @@ const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; labe
   margin-bottom: clamp(28px, 3vw, 40px);
 }
 .title .wm {
-  color: var(--brand-amber);
+  color: #ff6a00;
 }
 .title {
-  font-size: clamp(64px, 10.4vw, 152px);
+  font-size: clamp(44px, 9vw, 136px);
   line-height: 0.86;
   font-stretch: 116%;
   font-weight: 750;
@@ -192,7 +192,7 @@ const buttons = computed<{ key: string; icon: 'paper' | 'code' | 'weights'; labe
 }
 @media (max-width: 400px) {
   .title {
-    font-size: 16.5vw;
+    font-size: 12.5vw;
   }
 }
 </style>

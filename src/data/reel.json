@@ -9,31 +9,31 @@
       "jump": 0.0
     },
     {
-      "id": "night-harbor",
+      "id": "dance-studio",
       "start": 4.25,
       "end": 8.75,
       "jump": 4.5
     },
     {
-      "id": "dance-studio",
+      "id": "kayak-cove",
       "start": 8.75,
       "end": 13.25,
       "jump": 9.0
     },
     {
-      "id": "lantern-boat",
+      "id": "balloon",
       "start": 13.25,
       "end": 17.75,
       "jump": 13.5
     },
     {
-      "id": "space-greenhouse",
+      "id": "lantern-boat",
       "start": 17.75,
       "end": 22.25,
       "jump": 18.0
     },
     {
-      "id": "coast-helicopter",
+      "id": "waterfall-trail",
       "start": 22.25,
       "end": 26.75,
       "jump": 22.5

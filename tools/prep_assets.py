@@ -1,4 +1,4 @@
-"""Build web assets for the SparkWM site from compressed demo videos.
+"""Build web assets for the SparkStream site from compressed demo videos.
 
 usage: python3 tools/prep_assets.py <video.mp4> <id> public/media
 
