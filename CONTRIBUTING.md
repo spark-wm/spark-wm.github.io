@@ -2,7 +2,7 @@
 
 Maintainer notes for the SparkStream team (in Chinese). 仓库首页的介绍见 [README.md](README.md)。
 
-网址：<https://sparkdiffusion-ar.github.io/>
+网址：<https://SparkDiffusion-AR.github.io/>
 
 推送到 `main` 后，GitHub Actions 会自动构建并发布，大约两分钟后生效。
 

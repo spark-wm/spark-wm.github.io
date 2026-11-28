@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://sparkdiffusion-ar.github.io/">
+  <a href="https://SparkDiffusion-AR.github.io/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset=".github/assets/sparkstream-logo-dark.svg">
       <img src=".github/assets/sparkstream-logo-light.svg" alt="SparkStream" width="400">
@@ -13,18 +13,18 @@
 </p>
 
 <p align="center">
-  <a href="https://sparkdiffusion-ar.github.io/"><img alt="Project page" src="https://img.shields.io/badge/-Project%20Page-FF6A00?logo=googlechrome&logoColor=white&labelColor=555"></a>
+  <a href="https://SparkDiffusion-AR.github.io/"><img alt="Project page" src="https://img.shields.io/badge/-Project%20Page-FF6A00?logo=googlechrome&logoColor=white&labelColor=555"></a>
   <a href="https://huggingface.co/MiniMaxAI/MiniMax-H3"><img alt="Base model: MiniMax H3 33B" src="https://img.shields.io/badge/Base%20model-MiniMax%20H3%2033B-555"></a>
 </p>
 
 <p align="center"><a href="README.md">English</a> | 简体中文</p>
 
 <p align="center">
-  <a href="https://sparkdiffusion-ar.github.io/#demos">
+  <a href="https://SparkDiffusion-AR.github.io/#demos">
     <img src=".github/assets/sparkstream-reel.webp" width="800" alt="SparkStream 生成的样片轮流播放">
   </a>
   <br>
-  <sub>生成样片轮播（无声节选），每段都从给定的第一帧开始。带声音的完整样片见<a href="https://sparkdiffusion-ar.github.io/#demos">项目主页</a>。</sub>
+  <sub>生成样片轮播（无声节选），每段都从给定的第一帧开始。带声音的完整样片见<a href="https://SparkDiffusion-AR.github.io/#demos">项目主页</a>。</sub>
 </p>
 
 ## 简介
