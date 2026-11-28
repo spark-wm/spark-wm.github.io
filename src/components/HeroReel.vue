@@ -234,6 +234,7 @@ watch(small, () => {
 }
 .cap {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px 24px;
@@ -273,6 +274,8 @@ watch(small, () => {
   align-items: center;
   gap: 4px;
   flex: none;
+  /* on a narrow screen the controls wrap to their own line, kept on the right */
+  margin-left: auto;
 }
 .segs {
   display: flex;
